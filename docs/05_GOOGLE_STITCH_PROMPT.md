@@ -25,13 +25,23 @@ Use one coherent product with role-specific dashboards and navigation.
 
 - Brand: FactoryOS.
 - Tagline: “Your entire factory. One simple dashboard.”
-- Premium, calm, confident, modern industrial SaaS.
-- Light theme as the primary design.
-- Warm neutral background, white surfaces, deep navy text, a distinctive indigo/blue brand accent.
-- Semantic green/amber/red for status.
-- Restrained shadows, clean borders, consistent rounded corners.
-- Excellent typography and numeric legibility.
-- Avoid generic AI gradients, glassmorphism, excessive decoration and clutter.
+- Premium, calm, confident, modern industrial SaaS following the approved FactoryOS Benchmark Design System (modeled on `DashboardPage.tsx`).
+- Light theme as the primary design: soft off-white canvas (`#F8FAFA` / `#F5F7F8`), pure white elevated cards (`#FFFFFF`, `rounded-2xl`, `border border-[#EBF1F5]`).
+- **Core 3 Brand Colors (60-30-10 Ratio):**
+  - **Midnight Navy (`#002941`):** 60% Dominant brand, primary typography, active nav pills, checkboxes, profit chart bars.
+  - **Pale Mint (`#CFE8E1`):** 30% Secondary freshness, completed badges, sub-card wells, positive progress tracks.
+  - **Coral Orange (`#FD6E6E`):** 10–15% Active accent, loss chart bars, pending badges, threshold alerts, notification dots.
+- **Semantic Status System (Dot + Label Pattern):**
+  - `completed`: Mint dot `#2D8576` + Mint pill `#E4F4F0`
+  - `inProgress`: Navy dot `#002941` + Navy pill `#DFECF3`
+  - `pending`: White dot + Coral Gradient pill `from-[#FD6E6E] via-[#F04646] to-[#AB1B1B]`
+  - `issue`: Crimson dot `#D62727` + Alert pill `#FFE6E4`
+- Pill architecture across all interactive elements (`rounded-full` for all buttons, tabs, tags, badges, search inputs).
+- Restrained ambient diffused shadows (`box-shadow: 0 4px 20px -2px rgba(0, 41, 65, 0.04)`), zero harsh dark borders.
+- Consistent **14px (`gap-3.5` / `space-y-3.5`)** layout rhythm.
+- Excellent typography and mandatory `tabular-nums` for all numeric metrics and currency figures.
+- Universal mobile browser responsiveness: works seamlessly in mobile phone and tablet browsers down to 360px width.
+- Avoid generic AI gradients, glassmorphism, excessive decoration, and dense legacy ERP tables.
 - Use realistic Indian factory context without stereotypes.
 - Use realistic sample content and mark it as demo data.
 

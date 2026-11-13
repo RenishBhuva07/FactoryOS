@@ -11,12 +11,20 @@ Design **FactoryOS**, a premium but extremely simple factory operations SaaS for
 - Worker: minimal mobile interface, only relevant tasks.
 
 ## Design direction
-- Modern industrial SaaS, not a legacy ERP.
-- Light theme first.
-- Warm neutral background, crisp white surfaces, dark readable text, restrained primary accent, semantic green/amber/red.
-- High contrast, generous spacing, clear hierarchy, large tap targets.
-- Use meaningful icons with labels.
-- Avoid visual noise, tiny text, dense tables on mobile, excessive gradients, glassmorphism, neon, decorative 3D, and unnecessary animations.
+- FactoryOS Benchmark Design System (canonically implemented in `DashboardPage.tsx`):
+  - Soft neutral canvas (`#F8FAFA` / `#F5F7F8`), floating island shell (`rounded-[32px]`), pure white elevated cards (`rounded-2xl`, `border border-[#EBF1F5]`).
+  - **Core 3 Brand Colors (60-30-10 Ratio):** Midnight Navy (`#002941`, 60%), Pale Mint (`#CFE8E1`, 30%), and Coral Orange (`#FD6E6E`, 10–15% for active action accents, loss/expense chart bars, pending badges, threshold alerts, and spending highlights). All extended palettes are derived from these 3 colors.
+  - Pill architecture across all interactive elements (`rounded-full` for all buttons, tabs, tags, badges, and search bars).
+  - Floating top segmented pill navigation and floating left icon rail dock (`hidden md:flex` on mobile).
+  - High-contrast two-tone rounded bar charts, hero gradient metric cards, and modern data tables with rounded checkboxes (`rounded-[4px]`) and status dots.
+  - Soft diffused ambient shadows (`box-shadow: 0 4px 20px -2px rgba(0, 41, 65, 0.04)`), zero harsh black borders.
+  - Consistent **14px (`gap-3.5` / `space-y-3.5`)** layout rhythm.
+- **Universal Mobile Browser Responsiveness:** Every screen must open and function cleanly in mobile phone and tablet browsers (down to 360px width) without horizontal page breaks, utilizing responsive single-column card stacking, sticky mobile header, and minimum 44px–48px touch targets.
+- **Common Separate Reusable Components:** Everything must be built using modular, reusable components in `src/components/common/`.
+- **Attachment Interpretation Rule:** Any provided Stitch screens, wireframes, or reference attachments specify **CONTENT, FIELDS, AND FUNCTIONAL WORKFLOWS ONLY**. All visual execution, geometry, spacing, typography, and styling must follow the FactoryOS Benchmark Design System.
+- Modern industrial SaaS, never a legacy ERP.
+- High contrast, generous breathing room, clear typographic hierarchy, large tap targets.
+- Avoid visual noise, tiny text, dense legacy ERP tables, excessive gradients, glassmorphism, neon, decorative 3D, and unnecessary animations.
 - Use realistic but clearly illustrative demo data.
 - Do not make unsupported claims such as “live machine tracking”.
 

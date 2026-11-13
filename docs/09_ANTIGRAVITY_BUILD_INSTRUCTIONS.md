@@ -84,7 +84,11 @@ For every slice include:
 
 ## Design implementation
 
-Use approved Google Stitch screens as visual references. Extract reusable design tokens and components before implementing individual pages. Do not copy screenshots as static backgrounds. Do not invent a different visual style on each screen.
+- Strictly follow the FactoryOS Benchmark Design System (`docs/06_UX_CONTENT_AND_DESIGN_SYSTEM.md`), canonically implemented in `src/pages/dashboard/DashboardPage.tsx`.
+- **Core 3 Brand Colors Mandate:** Adhere strictly to Midnight Navy (`#002941`, 60%), Pale Mint (`#CFE8E1`, 30%), and Coral Orange (`#FD6E6E`, 10–15%).
+- **Common Separate Reusable Components:** Build all interfaces out of shared components in `src/components/common/` (`Card`, `PillButton`, `SegmentedPillNav`, `FloatingIconDock`, `StatusDotBadge`, `KpiMetricCard`, `DataTable`, `PillInput`, `PillProgressBar`). Never write monolithic or duplicated UI blocks.
+- **Universal Mobile Browser Responsiveness:** Every screen must be verified in mobile phone/tablet browsers (360px+ viewport) with no horizontal overflow, touch targets >= 44px–48px, and responsive card stacking.
+- **Attachment Interpretation Rule:** Any provided Stitch reference screens, wireframes, or example mockups serve **STRICTLY TO DEFINE CONTENT, DATA FIELDS, AND FEATURE WORKFLOWS**. Visual styling, card architecture, floating pill navigation, buttons, spacing (14px rhythm), and shadows must always follow the approved FactoryOS Benchmark Design System. Do not copy dated, clunky, or unstyled visuals from reference attachments. Do not invent a different visual style on each screen.
 
 ## Definition of done
 
