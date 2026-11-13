@@ -1,75 +1,46 @@
-# React + TypeScript + Vite
+# FactoryOS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **"Your factory. Your people. Your production. One place."**
 
-Currently, two official plugins are available:
+FactoryOS is a lightweight, multi-tenant factory operations management platform designed for small-to-mid manufacturing businesses. It replaces spreadsheets, paper logs, and complex ERPs with role-focused workflows for factory owners and floor supervisors.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Architecture & Modules
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Based on the [Technical Architecture](./docs/04_TECHNICAL_ARCHITECTURE.md), FactoryOS is architected as a **modular monolith** with tenant isolation across all layers:
 
-## Expanding the ESLint configuration
+- **Stack**: React + TypeScript + Vite | Node.js REST API (`/api/v1`) | PostgreSQL + Prisma
+- **Core Modules**:
+  - **Identity & Access**: Multi-tenant RBAC (Owner, Supervisor, Worker).
+  - **Workforce**: Employees, shift rosters, and bulk attendance.
+  - **Shop Floor**: Work orders/jobs, quick production entries, and scrap recording.
+  - **Operations**: Machine downtime tracking, inventory, quality, and dispatch.
+  - **Factory Pulse**: Real-time summary dashboard, daily reports, and alerts.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```bash
+# Install dependencies
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start development server
+npm run dev
 
+# Lint and typecheck
+npm run lint
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Documentation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Comprehensive product and technical documentation is available in [`docs/`](./docs/):
 
-```
+- [Technical Architecture](./docs/04_TECHNICAL_ARCHITECTURE.md)
+- [Product Requirements](./docs/02_PRODUCT_REQUIREMENTS.md)
+- [UX & Design System](./docs/06_UX_CONTENT_AND_DESIGN_SYSTEM.md)
+- [Security & Compliance](./docs/08_SECURITY_PRIVACY_AND_COMPLIANCE.md)
