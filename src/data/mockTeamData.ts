@@ -1,0 +1,91 @@
+import type {
+  TeamAttendanceKpis,
+  TeamMemberRoster,
+  StationCoverageItem,
+} from '../types/team';
+
+export const MOCK_TEAM_KPIS: TeamAttendanceKpis = {
+  presentCount: 42,
+  totalShiftCount: 46,
+  presentPercent: 91.3,
+  biometricCompliancePercent: 97.8,
+  overtimeHours: '14.5 hrs',
+  criticalStationAbsenceCount: 2,
+  criticalStationDetail: 'Lathe Section #02 relievers absent',
+};
+
+export const MOCK_TEAM_ROSTER: TeamMemberRoster[] = [
+  {
+    id: 'tm-01',
+    name: 'Ramesh Bhai',
+    role: 'Shift A Supervisor',
+    avatarInitials: 'RB',
+    assignedStation: 'Shopfloor Central & QC',
+    shift: 'Shift A (08:00 - 16:30)',
+    punchInTime: '07:55 AM',
+    status: 'on_spindle',
+    statusLabel: 'On Duty',
+  },
+  {
+    id: 'tm-02',
+    name: 'Bharat K.',
+    role: 'CNC Master Machinist',
+    avatarInitials: 'BK',
+    assignedStation: 'M-01 ACE Micromatic',
+    shift: 'Shift A (08:00 - 16:30)',
+    punchInTime: '07:58 AM',
+    status: 'on_spindle',
+    statusLabel: 'On Spindle',
+  },
+  {
+    id: 'tm-03',
+    name: 'Sanjay R.',
+    role: 'Conventional Lathe Turner',
+    avatarInitials: 'SR',
+    assignedStation: 'M-02 Lathe 6ft',
+    shift: 'Shift A (08:00 - 16:30)',
+    punchInTime: '08:02 AM',
+    status: 'on_spindle',
+    statusLabel: 'On Spindle',
+  },
+  {
+    id: 'tm-04',
+    name: 'Mahendra Patel',
+    role: 'Drill Technician',
+    avatarInitials: 'MP',
+    assignedStation: 'M-03 Radial Drill',
+    shift: 'Shift A (08:00 - 16:30)',
+    punchInTime: '08:00 AM',
+    status: 'on_spindle',
+    statusLabel: 'On Spindle',
+  },
+  {
+    id: 'tm-05',
+    name: 'Dinesh M.',
+    role: 'Lead QC Inspector',
+    avatarInitials: 'DM',
+    assignedStation: 'Metrology Lab',
+    shift: 'Shift A (08:00 - 16:30)',
+    punchInTime: '07:50 AM',
+    status: 'on_spindle',
+    statusLabel: 'Inspecting',
+  },
+  {
+    id: 'tm-06',
+    name: 'Pravin K.',
+    role: 'Reliever Turner',
+    avatarInitials: 'PK',
+    assignedStation: 'M-07 Band Saw / Reliever',
+    shift: 'Shift A (08:00 - 16:30)',
+    punchInTime: '08:05 AM',
+    status: 'overtime',
+    statusLabel: 'Overtime Active',
+  },
+];
+
+export const MOCK_STATION_COVERAGE: StationCoverageItem[] = [
+  { id: 'cov-01', stationName: 'CNC Machining Cells', coveragePercent: 100, variant: 'mint' },
+  { id: 'cov-02', stationName: 'Conventional Lathes', coveragePercent: 85, variant: 'coral' },
+  { id: 'cov-03', stationName: 'Drilling & Tapping', coveragePercent: 100, variant: 'mint' },
+  { id: 'cov-04', stationName: 'Inspection & Metrology', coveragePercent: 100, variant: 'mint' },
+];

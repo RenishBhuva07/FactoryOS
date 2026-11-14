@@ -5,8 +5,10 @@ export interface PillProgressBarProps {
   max: number;
   leftLabel?: string;
   rightLabel?: string;
-  variant?: 'navy' | 'mint' | 'coral';
+  variant?: 'navy' | 'mint' | 'coral' | 'heroNavy' | 'heroMint' | 'heroCoral';
   height?: 'sm' | 'md' | 'lg';
+  trackClassName?: string;
+  barClassName?: string;
   className?: string;
 }
 
@@ -17,6 +19,8 @@ export const PillProgressBar: React.FC<PillProgressBarProps> = ({
   rightLabel,
   variant = 'navy',
   height = 'md',
+  trackClassName = '',
+  barClassName = '',
   className = '',
 }) => {
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
@@ -29,15 +33,18 @@ export const PillProgressBar: React.FC<PillProgressBarProps> = ({
 
   const barStyles = {
     navy: 'bg-gradient-to-r from-[#002941] via-[#0C3953] to-[#164E6E]',
-    mint: 'bg-gradient-to-r from-[#CFE8E1] via-[#74BFB0] to-[#43A392]',
+    heroNavy: 'bg-gradient-to-r from-[#002941] via-[#0C3953] to-[#164E6E]',
+    mint: 'bg-gradient-to-r from-[#103530] via-[#184E46] to-[#2D8576]',
+    heroMint: 'bg-gradient-to-r from-[#103530] via-[#184E46] to-[#2D8576]',
     coral: 'bg-gradient-to-r from-[#FD6E6E] via-[#F04646] to-[#AB1B1B] shadow-[0_1px_4px_rgba(253,110,110,0.3)]',
+    heroCoral: 'bg-gradient-to-r from-[#FD6E6E] via-[#F04646] to-[#AB1B1B] shadow-[0_1px_4px_rgba(253,110,110,0.3)]',
   }[variant];
 
   return (
     <div className={`w-full space-y-2 ${className}`}>
-      <div className={`w-full rounded-full bg-[#DFECF3]/70 overflow-hidden ${heightStyles}`}>
+      <div className={`w-full rounded-full ${trackClassName || 'bg-[#DFECF3]/70'} overflow-hidden ${heightStyles}`}>
         <div
-          className={`h-full rounded-full transition-all duration-300 ${barStyles}`}
+          className={`h-full rounded-full transition-all duration-300 ${barClassName || barStyles}`}
           style={{ width: `${percentage}%` }}
         />
       </div>

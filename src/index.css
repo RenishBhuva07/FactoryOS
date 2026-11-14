@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Bitcoa';
+  src: url('./assets/Fonts/Bitcoa.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-pale-mint: #CFE8E1;
   --color-midnight-navy: #002941;
@@ -82,6 +90,7 @@
   --font-display: "Plus Jakarta Sans", "Inter", -apple-system, sans-serif;
   --font-body: "Plus Jakarta Sans", "Inter", -apple-system, sans-serif;
   --font-label: "Plus Jakarta Sans", "Inter", -apple-system, sans-serif;
+  --font-brand: "Bitcoa", "Plus Jakarta Sans", sans-serif;
 }
 
 @layer base {
