@@ -21,13 +21,20 @@ Consult other documents in `docs/` whenever relevant. Treat the approved product
 - Preserve the initialized project stack and working configuration unless an architectural change is explicitly approved.
 - Use TypeScript with strict typing.
 - Prefer modular, reusable components and clear separation of UI, business logic, and API services.
-- Follow the approved FactoryOS Benchmark Design System (detailed in `docs/06_UX_CONTENT_AND_DESIGN_SYSTEM.md`, canonically implemented in `src/pages/dashboard/DashboardPage.tsx`).
+- **LOCKED DESIGN REFERENCE MANDATE (Zero Changes to src/design-reference Without Explicit Permission)**:
+  - The dedicated benchmark archive (`src/design-reference/`), along with its foundational benchmark components, is **STRICTLY LOCKED**.
+  - **No Changes Without Permission**: You MUST NOT make any changes, edits, refactoring, re-styling, or restructuring to `src/design-reference/**` without explicit, prior user approval.
+  - **Single Source of Truth**: This design reference serves as the permanent gold standard, visual blueprint, and single source of truth for designing all future UI components and screens of this project.
+  - **Strict Pattern Inheritance**: All future modules (e.g., Inventory, Production, Orders, Supervisor Mobile, Quality, Settings) must faithfully mirror the exact visual standards, spatial rhythm (14px / `gap-3.5`), 60-30-10 color balance, tabular numbers (`tabular-nums`), pill navigation, stationary coordinate-locked sidebar, and clean card perimeters established in this reference, but must be implemented in their own separate modular directories without modifying the locked reference.
+- Follow the approved FactoryOS Benchmark Design System (detailed in `docs/06_UX_CONTENT_AND_DESIGN_SYSTEM.md`, canonically implemented in `src/design-reference/` and `src/pages/dashboard/DashboardPage.tsx`).
 - **Core 3 Brand Colors Mandate**:
   - All UI across the entire project must strictly adhere to the 3 approved brand colors, balanced via the **60-30-10 benchmark ratio**:
     1. **Midnight Navy**: `#002941` (60% Primary brand, high-contrast typography, dark contrast surfaces, active nav pills, checkboxes, profit chart bars)
     2. **Pale Mint**: `#CFE8E1` (30% Fresh accent, completed/normal status, soft sub-wells, highlight pills, profit/production chart bars)
     3. **Coral Orange**: `#FD6E6E` (10–15% Action/attention accent, pending/urgent alerts, loss/expense chart bars, spending highlights, attention cards, notification dots)
   - Any additional tints, shades, surfaces, or states must be harmoniously derived from these 3 colors, defined centrally in `src/colors.tsx` and `src/constants/colors.ts`.
+  - **Tripartite Breakdown Rule (Multi-Tier & Pipeline Visualization)**: When visualizing 3-part breakdowns or tier pipelines (e.g., `ClientTierPipelineCard`), strictly assign Tier 1 (Dominant ~60%) to Midnight Navy, Tier 2 (Secondary ~30%) to Pale Mint, and Tier 3 (Accent ~10%) to Coral Orange. Never use generic muted gray for the 3rd tier.
+  - **Entity & Card 1:1 Theming Rule**: When an entity/card has a specific operational state or urgency, all accompanying accents (Avatar Icon, Progress Bar Fill, Status Dot/Pill, Action Buttons, and Due Dates) must maintain 1:1 color harmony with that theme (Urgent/Awaiting QC in Coral, Machining/Completed in Mint, Standard/Assembly in Navy).
 - **Common Separate Reusable Components Architecture**:
   - Everything must be modularized into common separate components (`src/components/common/`).
   - Always write clean, atomic, reusable code with typed props (e.g. `Card`, `PillButton`, `SegmentedPillNav`, `FloatingIconDock`, `StatusDotBadge`, `KpiMetricCard`, `DataTable`, `PillInput`, `PillProgressBar`).
@@ -39,6 +46,17 @@ Consult other documents in `docs/` whenever relevant. Treat the approved product
 - **Universal Mobile Browser Responsiveness**:
   - Build responsive experiences for owners and managers that open and function flawlessly in mobile phone and tablet web browsers (down to 360px viewport width) without horizontal page breaks.
   - Enforce touch targets >= 44px–48px, horizontal table scroll wrappers, sticky header, and single-column card stacking.
+- **Collapsible In-Flow Sidebar & Coordinate-Lock Mandate**:
+  - The left dock rail operates in two seamless states: **Collapsed Rail** (`72px`, centered at $X = 36\text{px}$) and **Expanded Full Sidebar** (`256px` / `w-64`, with smooth `cubic-bezier(0.16, 1, 0.3, 1)` easing).
+  - **In-Flow Layout Push**: The expanding dock MUST push and resize the sibling content container (`flex-1 min-w-0`) within the flex layout flow. Floating overlays that occlude or cast shadows over dashboard content, tabs, or headers are strictly prohibited.
+  - **Stationary Icon Coordinate Lock ($X$ and $Y$ Invariance)**: Navigation icons must never shift position when opening or closing. Anchor all icons to a dedicated 40×40px box centered at $X = 36\text{px}$. Lock vertical heights via a standardized top header footprint (`h-[148px] shrink-0`), identical container padding (`py-2.5`), identical item heights (`h-10`), and identical gaps (`gap-2`). Expansion unfolds strictly horizontally to reveal labels and badges to the right of stationary icons.
+  - **Brand Capsule Badge Wrapper**: Enclose logo mark and name inside an elevated white capsule badge (`bg-white border border-[#DFECF3] shadow-xs`): 48×48px in collapsed mode, widening to a unified capsule enclosing the logo and title in expanded mode.
+  - **Drawer Controls**: Use canonical panel collapse/expand icons (`menu_open` / `dock_to_left`), never generic pin icons.
+  - **Collapsed Bottom Utilities**: Preserve the classic circular action pill capsule (`rounded-full p-1 bg-white border border-[#DFECF3] shadow-xs`) with centered 32×32px buttons.
+- **Clean Card Perimeter Mandate**:
+  - Prohibit protruding chevron or arrow buttons floating across outer card borders or gutter channels. All controls and pagination actions must remain cleanly contained within card headers or toolbars.
+- **Brand Naming Mandate**:
+  - The brand name throughout all components, layouts, headings, and mock copy is strictly **FactoryOS** (never legacy or placeholder names like "Finexy").
 - Enforce authentication, authorization, and tenant isolation on the server; never rely only on hidden UI controls.
 - Do not introduce fake integrations, fabricated live telemetry, or misleading metrics.
 - Do not expose secrets or credentials in source code.

@@ -11,7 +11,7 @@ Design **FactoryOS**, a premium but extremely simple factory operations SaaS for
 - Worker: minimal mobile interface, only relevant tasks.
 
 ## Design direction
-- FactoryOS Benchmark Design System (canonically implemented in `DashboardPage.tsx`):
+- FactoryOS Benchmark Design System (canonically implemented and locked in `src/design-reference/` and `src/pages/dashboard/DashboardPage.tsx`):
   - Soft neutral canvas (`#F8FAFA` / `#F5F7F8`), floating island shell (`rounded-[32px]`), pure white elevated cards (`rounded-2xl`, `border border-[#EBF1F5]`).
   - **Core 3 Brand Colors (60-30-10 Ratio):** Midnight Navy (`#002941`, 60%), Pale Mint (`#CFE8E1`, 30%), and Coral Orange (`#FD6E6E`, 10–15% for active action accents, loss/expense chart bars, pending badges, threshold alerts, and spending highlights). All extended palettes are derived from these 3 colors.
   - Pill architecture across all interactive elements (`rounded-full` for all buttons, tabs, tags, badges, and search bars).

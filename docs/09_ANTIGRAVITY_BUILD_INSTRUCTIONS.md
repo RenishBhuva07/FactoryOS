@@ -84,9 +84,12 @@ For every slice include:
 
 ## Design implementation
 
-- Strictly follow the FactoryOS Benchmark Design System (`docs/06_UX_CONTENT_AND_DESIGN_SYSTEM.md`), canonically implemented in `src/pages/dashboard/DashboardPage.tsx`.
+- **Locked Design Reference Mandate:** The benchmark archive `src/design-reference/` is strictly locked as the permanent benchmark single source of truth. Do NOT modify it without explicit user permission. All new screens must derive their visual architecture from this reference into their own modular folders.
+- Strictly follow the FactoryOS Benchmark Design System (`docs/06_UX_CONTENT_AND_DESIGN_SYSTEM.md`), canonically implemented in `src/design-reference/` and `src/pages/dashboard/DashboardPage.tsx`.
 - **Core 3 Brand Colors Mandate:** Adhere strictly to Midnight Navy (`#002941`, 60%), Pale Mint (`#CFE8E1`, 30%), and Coral Orange (`#FD6E6E`, 10–15%).
 - **Common Separate Reusable Components:** Build all interfaces out of shared components in `src/components/common/` (`Card`, `PillButton`, `SegmentedPillNav`, `FloatingIconDock`, `StatusDotBadge`, `KpiMetricCard`, `DataTable`, `PillInput`, `PillProgressBar`). Never write monolithic or duplicated UI blocks.
+- **Collapsible In-Flow Sidebar & Coordinate-Lock Mandate:** The left dock rail operates in two seamless states: collapsed rail (`72px`) and expanded full sidebar (`256px` / `w-64`). Expansion must push and resize the sibling content view in-flow (never occlude content with floating overlays). All primary icons must maintain identical $(X, Y)$ coordinates ($X = 36\text{px}$, fixed vertical footprint) so expansion is strictly horizontal. Housing must use the brand capsule badge wrapper and canonical `menu_open`/`dock_to_left` drawer controls.
+- **Clean Card Perimeter Mandate:** Cards must maintain clean, contained outer boundaries without floating chevron/arrow widgets protruding across layout gutters.
 - **Universal Mobile Browser Responsiveness:** Every screen must be verified in mobile phone/tablet browsers (360px+ viewport) with no horizontal overflow, touch targets >= 44px–48px, and responsive card stacking.
 - **Attachment Interpretation Rule:** Any provided Stitch reference screens, wireframes, or example mockups serve **STRICTLY TO DEFINE CONTENT, DATA FIELDS, AND FEATURE WORKFLOWS**. Visual styling, card architecture, floating pill navigation, buttons, spacing (14px rhythm), and shadows must always follow the approved FactoryOS Benchmark Design System. Do not copy dated, clunky, or unstyled visuals from reference attachments. Do not invent a different visual style on each screen.
 

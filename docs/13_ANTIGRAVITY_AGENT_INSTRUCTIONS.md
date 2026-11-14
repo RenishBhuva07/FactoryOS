@@ -61,16 +61,23 @@ Do not implement all modules in one giant change.
 
 ## 5. UI rules
 
-- **Mandatory Design Benchmark:** Strictly follow the FactoryOS Benchmark Design System (`docs/06_UX_CONTENT_AND_DESIGN_SYSTEM.md`), canonically implemented in `src/pages/dashboard/DashboardPage.tsx`:
+- **LOCKED DESIGN REFERENCE MANDATE (Zero Changes to src/design-reference Without Explicit Permission):**
+  - The dedicated benchmark archive `src/design-reference/`, along with its foundational benchmark components, is **STRICTLY LOCKED**.
+  - **No Changes Without Permission:** You MUST NOT make any changes, edits, refactoring, re-styling, or restructuring to `src/design-reference/**` without explicit, prior user approval.
+  - **Single Source of Truth:** This whole Dashboard UI serves as the permanent gold standard, visual blueprint, and single source of truth for designing all future UI components and screens of FactoryOS.
+  - **Strict Pattern Inheritance:** All future modules (Inventory, Production, Orders, Supervisor Mobile, Quality, Settings) must faithfully mirror the exact visual standards, spatial rhythm (14px / `gap-3.5`), 60-30-10 color balance, tabular numbers (`tabular-nums`), pill navigation, stationary coordinate-locked sidebar, and clean card perimeters established in this reference, but must be implemented in their own separate modular directories without modifying the locked reference.
+- **Mandatory Design Benchmark:** Strictly follow the FactoryOS Benchmark Design System (`docs/06_UX_CONTENT_AND_DESIGN_SYSTEM.md`), canonically implemented in `src/design-reference/` and `src/pages/dashboard/DashboardPage.tsx`:
   - Soft neutral canvas (`#F8FAFA` / `#F5F7F8`), floating app shell, pure white elevated cards (`#FFFFFF`, `rounded-2xl`, `border border-[#EBF1F5]`).
   - **Core 3 Brand Colors (60-30-10 Ratio):** Midnight Navy (`#002941`, 60%), Pale Mint (`#CFE8E1`, 30%), and Coral Orange (`#FD6E6E`, 10–15%). All extended scales are derived from these 3 anchors, defined in `src/colors.tsx` and `src/constants/colors.ts`.
   - **The 4-Card Archetype System:** Hero Command Card (Navy gradient), Subtle Coral Attention/Expense Card, Subtle Mint Freshness Card, and Standard Pure White Elevation Card.
   - **Common Separate Reusable Components:** All UI elements must be built as standalone, reusable components in `src/components/common/`. Never write monolithic or duplicated one-off UI blocks.
   - Pill everywhere for interactive elements (`rounded-full` for all buttons, tabs, search inputs, tags, and micro-badges).
-  - Floating top segmented pill navigation and floating left icon rail dock (`hidden md:flex` on mobile).
+  - Floating top segmented pill navigation and collapsible in-flow left dock rail (`72px` $\leftrightarrow$ `256px` with stationary icon coordinate lock at $X = 36\text{px}$, in-flow flex layout push, brand capsule badge wrapper, and canonical `menu_open`/`dock_to_left` drawer controls; `hidden md:flex` on mobile).
   - Two-tone stacked rounded bar charts, hero gradient metric cards, and modern data tables with rounded checkboxes (`w-4 h-4 rounded-[4px]`) and status dots.
+  - Clean contained card boundaries: zero protruding edge chevrons or floating boundary widgets.
   - Soft diffused ambient drop shadows (`box-shadow: 0 4px 20px -2px rgba(0, 41, 65, 0.04)`), zero harsh dark borders.
   - Consistent **14px (`gap-3.5` / `space-y-3.5`)** layout rhythm across all grids and card stacks.
+  - Brand name across all screens, layouts, and copy is strictly **FactoryOS**.
 - **Universal Mobile Browser Responsiveness:**
   - Every screen must open and function flawlessly in mobile phone and tablet browsers (down to 360px width) without horizontal page breaks.
   - Layouts must stack to single-column on mobile (`grid-cols-1 lg:grid-cols-12`).

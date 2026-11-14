@@ -25,7 +25,7 @@ Use one coherent product with role-specific dashboards and navigation.
 
 - Brand: FactoryOS.
 - Tagline: “Your entire factory. One simple dashboard.”
-- Premium, calm, confident, modern industrial SaaS following the approved FactoryOS Benchmark Design System (modeled on `DashboardPage.tsx`).
+- Premium, calm, confident, modern industrial SaaS following the approved FactoryOS Benchmark Design System (canonically implemented and locked in `src/design-reference/` and `src/pages/dashboard/DashboardPage.tsx`).
 - Light theme as the primary design: soft off-white canvas (`#F8FAFA` / `#F5F7F8`), pure white elevated cards (`#FFFFFF`, `rounded-2xl`, `border border-[#EBF1F5]`).
 - **Core 3 Brand Colors (60-30-10 Ratio):**
   - **Midnight Navy (`#002941`):** 60% Dominant brand, primary typography, active nav pills, checkboxes, profit chart bars.

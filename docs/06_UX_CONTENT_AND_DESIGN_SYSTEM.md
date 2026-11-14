@@ -2,7 +2,14 @@
 
 ## 1. Executive Visual Principle: The FactoryOS Benchmark Standard
 
-FactoryOS follows a clean, calm, and production-grade design benchmark, canonically implemented in [`DashboardPage.tsx`](file:///Users/renishbhuva/Documents/Development/React_Js/FactoryOS/src/pages/dashboard/DashboardPage.tsx). The interface feels like a high-end, bespoke operating system: uncluttered, softly elevated, generous in breathing room, and effortlessly intuitive for non-technical factory owners and supervisors across both desktop displays and mobile phone/tablet browsers.
+FactoryOS follows a clean, calm, and production-grade design benchmark, canonically implemented and locked in [`src/design-reference/`](file:///Users/renishbhuva/Documents/Development/React_Js/FactoryOS/src/design-reference/) and [`src/pages/dashboard/DashboardPage.tsx`](file:///Users/renishbhuva/Documents/Development/React_Js/FactoryOS/src/pages/dashboard/DashboardPage.tsx). The interface feels like a high-end, bespoke operating system: uncluttered, softly elevated, generous in breathing room, and effortlessly intuitive for non-technical factory owners and supervisors across both desktop displays and mobile phone/tablet browsers.
+
+> [!CAUTION]
+> **LOCKED DESIGN REFERENCE MANDATE (Zero Changes to src/design-reference Without Permission)**:
+> The dedicated benchmark archive in `src/design-reference/` is **strictly locked**. 
+> - **DO NOT MODIFY** without explicit user permission.
+> - This UI archive is the immutable single source of truth and visual gold standard for all future UI components and module screens across FactoryOS.
+> - All new modules (Inventory, Production, Orders, Supervisor Mobile, Quality, Onboarding, etc.) must inherit its tokens, 60-30-10 palette, 14px layout rhythm (`gap-3.5`), tabular figures (`tabular-nums`), in-flow dock sidebar, and card perimeter rules into their own separate modular directories.
 
 It eliminates dense legacy ERP tables, harsh borders, overwhelming data grids, and noisy decorative elements in favor of smooth rounded geometry, floating pill navigation, tactile card architecture, and intentional accent pops.
 
@@ -99,6 +106,38 @@ Never communicate status by color alone. Always pair a colored dot with legible 
 | `pending` | `#FFFFFF` (Pill) / Coral Grad (Dot) | `bg-gradient-to-r from-[#FD6E6E] via-[#F04646] to-[#AB1B1B]` | `#FFFFFF` font-semibold | Transparent | Pending Verification, Needs Supervisor Signoff, Overdue Alert |
 | `issue` | `#D62727` (Coral 600) | `#FFE6E4` (Coral 100) | `#871919` (Coral 800) font-medium | `#FD6E6E`/60 | Machine Breakdown, Quality Rejection, Safety Issue |
 
+### 3.4 The 60-30-10 Tripartite Rule for Data Breakdowns & Pipelines
+Whenever visualizing a 3-part breakdown, pipeline distribution, or categorical segmentation (e.g., `ClientTierPipelineCard`, revenue breakdown, order source shares):
+1. **Top / Dominant Tier (~60%):** **Midnight Navy** multi-stop gradient (`bg-gradient-to-r from-[#002941] via-[#0C3953] to-[#164E6E]`).
+2. **Middle / Secondary Tier (~30%):** **Pale Mint** multi-stop gradient (`bg-gradient-to-r from-[#103530] via-[#184E46] to-[#2D8576]`).
+3. **Bottom / Accent Tier (~10%):** **Coral Orange** multi-stop gradient (`bg-gradient-to-r from-[#FD6E6E] via-[#F04646] to-[#AB1B1B]`).
+
+> [!IMPORTANT]
+> **No Generic Gray Fallbacks in Active Tripartite Pipelines:**
+> Prohibit using generic gray or muted fallback colors for active 3-tier distributions. The 3rd tier must always complete the visual triad with Coral Orange to maintain the 60-30-10 production balance.
+
+### 3.5 Entity & Card Theming Rule (1:1 Theme Harmony)
+When a card represents an entity with a specific operational state or urgency, all accompanying accents (Avatar Icon, Progress Bar Fill, Status Dot/Pill, Action Buttons, and Due Dates) must maintain 1:1 color harmony with that theme:
+
+1. **Urgent / Awaiting QC / Critical Alert (`coral`):**
+   - **Avatar / Entity Chip:** Coral gradient (`bg-gradient-to-br from-[#FD6E6E] via-[#F04646] to-[#AB1B1B] text-white shadow-xs`).
+   - **Fulfillment Progress Bar:** `variant="coral"` (`bg-gradient-to-r from-[#FD6E6E] via-[#F04646] to-[#AB1B1B]`).
+   - **Status Badge:** Soft coral pill (`bg-[#FFEBE9] text-[#C93B3B]`).
+   - **Primary Action:** Coral PillButton (`variant="coral"`, e.g., *Fast-Track QC*).
+   - **Due Date / Countdown:** `text-[#FD6E6E] font-bold tabular-nums`.
+
+2. **Active Production / Machining / Completed (`mint`):**
+   - **Avatar / Entity Chip:** Mint gradient (`bg-gradient-to-br from-[#103530] via-[#184E46] to-[#2D8576] text-[#CFE8E1] shadow-xs`).
+   - **Fulfillment Progress Bar:** `variant="mint"` (`bg-gradient-to-r from-[#103530] via-[#184E46] to-[#2D8576]`).
+   - **Status Badge:** Soft mint pill (`bg-[#E2F3EC] text-[#215E3F]`).
+   - **Action Button:** Mint gradient or secondary neutral pill.
+
+3. **Standard Scheduled / In Assembly / Neutral Anchor (`navy`):**
+   - **Avatar / Entity Chip:** Navy gradient (`bg-gradient-to-br from-[#002941] via-[#0C3953] to-[#164E6E] text-white shadow-xs`).
+   - **Fulfillment Progress Bar:** `variant="navy"` (`bg-gradient-to-r from-[#002941] via-[#0C3953] to-[#164E6E]`).
+   - **Status Badge:** Cool gray/navy pill (`bg-[#F0F5F9] text-[#002941]`).
+   - **Action Button:** Secondary neutral button (`bg-[#F0F5F9] border border-[#DFECF3] text-[#002941] font-semibold`).
+
 ---
 
 ## 4. Visual Foundations & Geometry Tokens
@@ -149,6 +188,23 @@ Never communicate status by color alone. Always pair a colored dot with legible 
   - Micro-Labels / Table Headers / Monospace: `text-[10px]` or `text-[11px] font-semibold text-[#8DA1AF]`
   - Trend Indicators / Deltas: `inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold` with directional arrows `↑` / `↓`.
 
+### 4.6 Nested Data Wells & Metrics Pattern (4-Stat Grid)
+For entity cards displaying operational metrics (such as `OrderCommitmentCard`):
+- **Container Well:** `bg-[#F8FAFA] border border-[#DFECF3] rounded-xl p-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs`.
+- **Uppercase Overline Label:** `text-[11px] font-semibold text-[#566E7F] uppercase tracking-wider block`.
+- **Primary Numerical Figure:** `font-bold text-[#002941] tabular-nums mt-0.5 block truncate`.
+- **PO / Code Badge:** `px-2 py-0.5 rounded-md bg-[#F0F5F9] border border-[#DFECF3] text-[#002941] font-mono text-[11px] font-semibold tabular-nums`.
+- **Dispatch Urgency Flag:** If urgent (`isDispatchUrgent: true`), override the figure color with `text-[#FD6E6E] font-bold tabular-nums`.
+
+### 4.7 Dialogs, Modals & Floating Overlays Standard
+For overlay workflows (such as `NewPurchaseOrderModal`):
+- **Backdrop Overlay:** `bg-[#002941]/40 backdrop-blur-sm fixed inset-0 z-50 flex items-center justify-center p-4`.
+- **Container Surface:** Pure white surface (`bg-white border border-[#DFECF3] rounded-[28px] sm:rounded-[32px] shadow-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden`).
+- **Header Structure:** Title (`text-lg sm:text-xl font-bold text-[#002941]`), helper note (`text-xs text-[#566E7F]`), and circular close button (`w-8 h-8 rounded-full bg-[#F0F5F9] hover:bg-[#DFECF3] text-[#002941] flex items-center justify-center transition-colors`).
+- **Scrollable Form Area:** `p-5 sm:p-6 overflow-y-auto space-y-4`.
+- **Input Geometry:** Strict `rounded-full` inputs (`PillInput`) or `rounded-xl` selection wells with focus ring `focus-within:border-[#002941]`.
+- **Modal Footer Actions:** Sticky bottom action bar (`p-4 bg-[#F8FAFA] border-t border-[#DFECF3] flex items-center justify-end gap-2.5 rounded-b-[28px] sm:rounded-b-[32px]`) with `secondary` neutral button for cancel and `primary` (Navy) button for confirmation.
+
 ---
 
 ## 5. Reusable Common Components Architecture
@@ -181,12 +237,19 @@ Every screen is assembled from this shared component suite:
    - Badge support: Optional pill count badge (`bg-[#CFE8E1] text-[#002941]` when active; `bg-[#DFECF3] text-[#002941]` when inactive).
 
 4. **`FloatingIconDock` (`src/components/common/FloatingIconDock.tsx`)**:
-   - Slim vertical rail (`72px` width, `py-3.5 px-2 select-none flex flex-col items-center justify-between`).
-   - Responsive behavior: Visible on desktop/tablet (`md:flex`), hidden on mobile browsers (`hidden md:flex`).
-   - Three functional tiers:
-     1. Top: Brand icon box (`w-10 h-10 rounded-2xl bg-gradient-to-br from-[#002941]...`) + Theme toggle pill switch.
-     2. Center: Navigation cluster (`py-3 px-2 rounded-2xl bg-white border border-[#DFECF3] shadow-md`) with active elevation pill and notification bubble.
-     3. Bottom: Utility cluster (Help, Logout with alert hover).
+   - Dual-state in-flow navigation dock:
+     - **Collapsed Rail (Idle):** `72px` width (`w-16 sm:w-[72px] px-2 items-center`), with all primary icon centers pinned to $X = 36\text{px}$.
+     - **Expanded Full Sidebar (Hover / Locked):** Smoothly expands in-flow to `256px` (`w-64 px-2.5 bg-[#F8FAFA] border-r border-[#DFECF3]`) using `transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]`.
+   - **In-Flow Layout Push Architecture:** The expanding dock is an in-flow flex item that dynamically pushes and resizes the sibling content view (`flex-1 min-w-0`). Floating overlays that occlude or cast shadows over dashboard content or header navigation are strictly prohibited.
+   - **Stationary Coordinate Lock ($X$ and $Y$ Invariance):**
+     - Primary navigation icons (`Dashboard`, `Calendar`, `Messages`, `Documents`, `Team`, `Inventory`, `Settings`) must maintain identical $(X, Y)$ pixel coordinates across both states.
+     - $X$-Axis: Anchor each icon inside a dedicated 40×40px box (`w-10 h-10 flex items-center justify-center shrink-0`) centered at $X = 36\text{px}$.
+     - $Y$-Axis: Standardize the top header container height to `h-[148px] shrink-0` in both states, apply identical container padding (`py-2.5`), identical item heights (`h-10`), and identical spacing (`gap-2`). Dynamic vertical centering (`my-auto`) that causes vertical icon jumping is prohibited.
+     - Labels (`whitespace-nowrap`) and status badges (`3 New`) slide and fade into view strictly to the right of the stationary icons.
+   - **Brand Capsule Badge Wrapper:** The logo mark and brand name must be enclosed in an elevated white capsule badge (`bg-white border border-[#DFECF3] shadow-xs`): 48×48px (`w-12 h-12 rounded-2xl`) in collapsed mode, widening to a unified capsule (`rounded-2xl py-1.5 px-2.5`) enclosing the logo and "FactoryOS — SMART MANUFACTURING" title in expanded mode.
+   - **Drawer Controls:** Use canonical panel toggle icons (`menu_open` for collapse, `dock_to_left` for keep-open / lock), never generic pin icons.
+   - **Classic Bottom Utility Pill:** Collapsed mode must preserve the classic pill capsule (`flex flex-col items-center gap-1.5 p-1 rounded-full bg-white border border-[#DFECF3] shadow-xs`) with centered 32×32px circular buttons for Help & Support and Sign Out.
+   - **Responsive Behavior:** Visible on desktop/tablet (`md:flex`), hidden on mobile browsers (`hidden md:flex`).
 
 5. **`StatusDotBadge` (`src/components/common/StatusDotBadge.tsx`)**:
    - Supports both `pill` (dot + colored background pill) and `dotOnly` (dot + text) modes across all 4 semantic states (`completed`, `inProgress`, `pending`, `issue`).
@@ -207,7 +270,19 @@ Every screen is assembled from this shared component suite:
    - `rounded-full` input fields (`bg-[#F0F5F9] border border-[#DFECF3] focus-within:border-[#002941] focus-within:bg-white`) with optional leading/trailing icons.
 
 9. **`PillProgressBar` (`src/components/common/PillProgressBar.tsx`)**:
-   - Capsule track (`rounded-full bg-[#DFECF3]/70 overflow-hidden h-2.5`) with bold Navy, Mint, or Coral progress fill (`rounded-full h-full`) and dual-label markers below.
+   - Capsule track (`rounded-full bg-[#DFECF3]/70 overflow-hidden`) with bold multi-stop gradient fill (`rounded-full h-full transition-all duration-300`).
+   - **Multi-Stop Gradient Variants:**
+     - `navy` / `heroNavy`: `bg-gradient-to-r from-[#002941] via-[#0C3953] to-[#164E6E]` (Dominant brand progress fill)
+     - `mint` / `heroMint`: `bg-gradient-to-r from-[#103530] via-[#184E46] to-[#2D8576]` (Positive completion / machining progress fill)
+     - `coral` / `heroCoral`: `bg-gradient-to-r from-[#FD6E6E] via-[#F04646] to-[#AB1B1B] shadow-[0_1px_4px_rgba(253,110,110,0.3)]` (Urgent, spending limit, or priority QC progress fill)
+   - **Track Tokens:**
+     - Standard White Surface: `bg-[#DFECF3]` or `bg-[#DFECF3]/70`
+     - Dark / Navy Hero Surface: `bg-white/20`
+   - **Height Scale Tokens:**
+     - `sm`: `h-1.5` (compact nested card progress bars, e.g. order commitment rows, client tier rows)
+     - `md`: `h-2.5` (standard card metrics)
+     - `lg`: `h-3.5` (prominent hero targets)
+   - **Label Markers:** Optional dual labels below track with `text-[#566E7F] font-medium` (left) and `text-[#002941] font-bold tabular-nums` (right).
 
 ---
 
@@ -221,7 +296,7 @@ Every screen is assembled from this shared component suite:
   - Hover Micro-Interactions: Bars elevate and brighten on hover (`group-hover:shadow-[0_4px_12px_rgba(...)]`).
   - Ultra-Faint Dotted Gridlines: `border-b border-dashed border-[#DFECF3]` with right-aligned monospace Y-axis figures (`50k`, `40k`, etc.).
   - Floating Dark Tooltip: Navy gradient container (`bg-gradient-to-br from-[#002941] via-[#0C3953] to-[#164E6E] text-white text-[10px] py-1.5 px-3 rounded-xl shadow-[0_8px_20px_-4px_rgba(0,41,65,0.4)] border border-white/10`) with mint header (`text-[#CFE8E1] font-bold`) and indicator dots.
-  - Carousel Pagination Chevron: Floating circular arrow button on card edge (`w-8 h-8 rounded-full bg-white border border-[#DFECF3] text-[#002941] shadow-md hover:bg-[#F0F5F9]`).
+  - **Clean Contained Perimeter Mandate:** Prohibit floating chevron or arrow buttons protruding over outer card borders or cutting across layout gutters (e.g. right-edge chevron buttons). All pagination, period switches, or actions must remain cleanly contained within card headers or internal toolbars.
 
 ---
 
