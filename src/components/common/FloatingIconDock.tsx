@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { BrandLogo } from "./BrandLogo";
 
 export interface DockItem {
   id: string;
@@ -116,25 +117,13 @@ export const FloatingIconDock: React.FC<FloatingIconDockProps> = ({
         {isExpanded ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex items-center justify-between w-full gap-2">
-              <div
-                className="flex items-center gap-2.5 h-12 bg-gradient-to-br from-[#FD6E6E] via-[#F04646] to-[#AB1B1B] border border-[#FFD0CC]/60 rounded-2xl px-2 shadow-[0_4px_14px_rgba(253,110,110,0.25)] cursor-pointer group hover:shadow-[0_6px_20px_rgba(253,110,110,0.35)] transition-all min-w-0 flex-1"
-                title={brandName}
+              <BrandLogo
+                variant="capsule"
+                size="md"
+                brandName={brandName}
                 onClick={() => onSelect("dashboard")}
-              >
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#002941] via-[#0C3953] to-[#164E6E] text-[#CFE8E1] flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                  <span className="material-symbols-outlined text-[19px]">
-                    precision_manufacturing
-                  </span>
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[15px] tracking-wide text-[#CFE8E1] font-brand truncate leading-tight drop-shadow-xs">
-                    {brandName}
-                  </span>
-                  <span className="text-[9px] font-semibold text-[#CFE8E1]/85 tracking-wider uppercase truncate leading-tight whitespace-nowrap font-sans">
-                    SMART MANUFACTURING
-                  </span>
-                </div>
-              </div>
+                className="flex-1 min-w-0"
+              />
 
               <button
                 type="button"
@@ -187,22 +176,11 @@ export const FloatingIconDock: React.FC<FloatingIconDockProps> = ({
           </div>
         ) : (
           <div className="flex flex-col items-center gap-1.5">
-            <div
-              className="flex flex-col items-center gap-1 cursor-pointer group"
-              title={brandName}
+            <BrandLogo
+              variant="iconOnly"
+              brandName={brandName}
               onClick={() => onSelect("dashboard")}
-            >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FD6E6E] via-[#F04646] to-[#AB1B1B] border border-[#FFD0CC]/60 shadow-[0_4px_14px_rgba(253,110,110,0.25)] flex items-center justify-center transition-all">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#002941] via-[#0C3953] to-[#164E6E] text-[#CFE8E1] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-                  <span className="material-symbols-outlined text-[19px]">
-                    precision_manufacturing
-                  </span>
-                </div>
-              </div>
-              <span className="text-[11px] tracking-wide bg-gradient-to-r from-[#002941] via-[#0C3953] to-[#164E6E] bg-clip-text text-transparent select-none font-brand">
-                {brandName}
-              </span>
-            </div>
+            />
 
             <div className="flex flex-col items-center gap-1 p-1 rounded-full bg-white border border-[#DFECF3] shadow-xs">
               <button

@@ -138,6 +138,31 @@ When a card represents an entity with a specific operational state or urgency, a
    - **Status Badge:** Cool gray/navy pill (`bg-[#F0F5F9] text-[#002941]`).
    - **Action Button:** Secondary neutral button (`bg-[#F0F5F9] border border-[#DFECF3] text-[#002941] font-semibold`).
 
+### 3.6 Systematic Usage of All 3 Hero Colors (Hero, Auth, Onboarding & Dashboard)
+To prevent single-color dominance (where Midnight Navy is mistakenly overused everywhere), all three hero colors (`HERO_COLORS.NAVY`, `HERO_COLORS.MINT`, `HERO_COLORS.CORAL` defined in `src/constants/colors.ts`) must be deployed according to explicit functional roles:
+
+1. **The Hero Page Triad:**
+   - **Midnight Navy Hero (60% Primary):** Command typography, main navigation capsule, Hero Command Deck foundation, primary trial CTA button.
+   - **Pale Mint Hero (30% Uptime Pulse):** Active machine telemetry cards, OEE gauge fills, WhatsApp live simulation badges, positive shift digests.
+   - **Coral Red Hero (10-15% Urgency & Savings):** Urgent trial badge (*"14-Day Free MSME Trial"*), threshold alerts (e.g., Press Station temperature warning), and dynamic downtime ROI savings metrics.
+
+2. **Auth Flow (Login & Sign Up):**
+   - **Left Hero Rail:** Deep Navy base with soft diffused Mint (`#2D8576`/20) and Coral (`#FD6E6E`/15) ambient glows.
+   - **Preview Deck:** Features 3 live machine cards representing the triad: CNC Milling (Mint, running 94.2%), Turning Lathe (Navy anchor), Press Station 03 (Coral alert, auto-alert pushed).
+   - **Mobile Banner:** Compact header displaying the 3-color brand verification badge before form fields.
+
+3. **Onboarding Wizard Step-by-Step Color Progression:**
+   - **Step 1 (Business Profile):** **Midnight Navy Hero** (Corporate identity, legal GST, Udyam MSME certification).
+   - **Step 2 (Shifts & Schedule):** **Pale Mint Hero** (Working shifts, active operational hours, break schedules, uptime tracking).
+   - **Step 3 (Machinery Catalog):** **Midnight Navy Hero** (CNC/VMC machine asset fleet, technical specifications).
+   - **Step 4 (Supervisor Invites & WhatsApp Passlinks):** **Coral Red Hero** + **Pale Mint** (Instant mobile passlinks, critical shift handover dispatch, immediate supervisor access).
+
+4. **Dashboard KPI Strip (Rebalanced 4-Card Archetype):**
+   - **Card 1 (Today's Output):** Hero Navy (`variant="heroNavy"`).
+   - **Card 2 (Workforce Attendance):** Hero Mint (`variant="heroMint"`).
+   - **Card 3 (Active Orders):** Subtle Mint or White benchmark card (`variant="default"`).
+   - **Card 4 (Machine Status / Maintenance Alert):** Hero Coral (`variant="heroCoral"`) or Subtle Coral (`variant="subtleCoral"`), reserving Coral exclusively for items needing operational attention.
+
 ---
 
 ## 4. Visual Foundations & Geometry Tokens

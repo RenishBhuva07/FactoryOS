@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FloatingIconDock } from '../common';
+import { useAuth, useLayout } from '../../context';
+import {
+  FloatingIconDock,
+  CommandPaletteModal,
+  NotificationsDrawer,
+  WhatsAppDigestModal,
+} from '../common';
 import type { DockItem } from '../common';
+import { MobileNavigationDrawer } from './MobileNavigationDrawer';
+import { MobileBottomNav } from './MobileBottomNav';
 
 const FACTORY_SIDEBAR_ITEMS: DockItem[] = [
   { id: 'overview', icon: 'grid_view', label: 'Overview' },
@@ -21,7 +29,13 @@ const FACTORY_SIDEBAR_ITEMS: DockItem[] = [
 export const AppLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/', { replace: true });
+  };
 
   const getActiveDockId = (): string => {
     const path = location.pathname;
@@ -36,6 +50,7 @@ export const AppLayout: React.FC = () => {
     if (path.startsWith('/dispatch')) return 'dispatch';
     if (path.startsWith('/reports')) return 'reports';
     if (path.startsWith('/settings')) return 'settings';
+    if (path.startsWith('/help')) return 'help';
     return 'overview';
   };
 
@@ -74,6 +89,9 @@ export const AppLayout: React.FC = () => {
       case 'settings':
         navigate('/settings');
         break;
+      case 'help':
+        navigate('/help');
+        break;
       case 'overview':
       case 'dashboard':
       default:
@@ -82,20 +100,54 @@ export const AppLayout: React.FC = () => {
     }
   };
 
+  const {
+    isMobileMenuOpen,
+    setIsMobileMenuOpen,
+    isSearchOpen,
+    setIsSearchOpen,
+    isNotificationsOpen,
+    setIsNotificationsOpen,
+    isWhatsAppDigestOpen,
+    setIsWhatsAppDigestOpen,
+  } = useLayout();
+
   return (
-    <div className="w-full h-screen overflow-hidden flex bg-[#F8FAFA] antialiased font-sans">
+    <div className="w-full h-screen overflow-hidden flex bg-[#F8FAFA] antialiased font-sans relative">
       <FloatingIconDock
         items={FACTORY_SIDEBAR_ITEMS}
         activeId={getActiveDockId()}
         onSelect={handleDockSelect}
+        onHelp={() => navigate('/help')}
+        onSignOut={handleSignOut}
         isDarkMode={isDarkMode}
         onToggleTheme={() => setIsDarkMode((prev) => !prev)}
         brandName="FactoryOS"
         className="hidden md:flex"
       />
-      <div className="flex-1 min-w-0 h-screen overflow-y-auto overflow-x-hidden flex flex-col">
+      <div className="flex-1 min-w-0 h-screen overflow-y-auto overflow-x-hidden flex flex-col pb-16 md:pb-0">
         <Outlet />
       </div>
+
+      {/* Mobile Drawer & Bottom Navigation */}
+      <MobileNavigationDrawer
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+      />
+      <MobileBottomNav />
+
+      {/* Global Modals */}
+      <CommandPaletteModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
+      <NotificationsDrawer
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+      />
+      <WhatsAppDigestModal
+        isOpen={isWhatsAppDigestOpen}
+        onClose={() => setIsWhatsAppDigestOpen(false)}
+      />
     </div>
   );
 };

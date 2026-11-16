@@ -35,6 +35,11 @@ Consult other documents in `docs/` whenever relevant. Treat the approved product
   - Any additional tints, shades, surfaces, or states must be harmoniously derived from these 3 colors, defined centrally in `src/colors.tsx` and `src/constants/colors.ts`.
   - **Tripartite Breakdown Rule (Multi-Tier & Pipeline Visualization)**: When visualizing 3-part breakdowns or tier pipelines (e.g., `ClientTierPipelineCard`), strictly assign Tier 1 (Dominant ~60%) to Midnight Navy, Tier 2 (Secondary ~30%) to Pale Mint, and Tier 3 (Accent ~10%) to Coral Orange. Never use generic muted gray for the 3rd tier.
   - **Entity & Card 1:1 Theming Rule**: When an entity/card has a specific operational state or urgency, all accompanying accents (Avatar Icon, Progress Bar Fill, Status Dot/Pill, Action Buttons, and Due Dates) must maintain 1:1 color harmony with that theme (Urgent/Awaiting QC in Coral, Machining/Completed in Mint, Standard/Assembly in Navy).
+  - **60-30-10 Hero Colors Mandate (`HERO_COLORS`)**:
+    - All 3 hero gradient palettes (`HERO_COLORS.NAVY`, `HERO_COLORS.MINT`, `HERO_COLORS.CORAL` defined in `src/constants/colors.ts`) must be deployed systematically rather than defaulting solely to Midnight Navy.
+    - **Hero Page**: Navy Hero (60% command core), Mint Hero (30% telemetry & OEE), Coral Hero (10-15% urgent trial & downtime savings).
+    - **Onboarding Step Progression**: Step 1 Navy (Business Profile), Step 2 Mint (Shifts & Schedule), Step 3 Navy (Machinery Catalog), Step 4 Coral + Mint (Supervisor Invites & WhatsApp Passlinks).
+    - **Dashboard KPI Strip**: Balance across 1 Hero Navy, 1 Hero Mint, 1 Subtle Mint/White, and 1 Hero/Subtle Coral (for maintenance attention). Avoid dual-coral dominance in top KPI strips.
 - **Common Separate Reusable Components Architecture**:
   - Everything must be modularized into common separate components (`src/components/common/`).
   - Always write clean, atomic, reusable code with typed props (e.g. `Card`, `PillButton`, `SegmentedPillNav`, `FloatingIconDock`, `StatusDotBadge`, `KpiMetricCard`, `DataTable`, `PillInput`, `PillProgressBar`).

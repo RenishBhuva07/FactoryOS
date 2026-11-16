@@ -7,3 +7,8 @@ export { OnboardingProvider } from "./OnboardingContext";
 export { OnboardingContext } from "./onboardingContextDef";
 export type { OnboardingContextType } from "./onboardingContextDef";
 export { useOnboarding } from "./useOnboarding";
+
+export { LayoutProvider } from "./LayoutContext";
+export { LayoutContext } from "./layoutContextDef";
+export type { LayoutContextType } from "./layoutContextDef";
+export { useLayout } from "./useLayout";

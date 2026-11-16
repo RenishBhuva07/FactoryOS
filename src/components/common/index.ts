@@ -7,4 +7,7 @@ export * from './KpiMetricCard';
 export * from './PillInput';
 export * from './PillProgressBar';
 export * from './DataTable';
-
+export * from './BrandLogo';
+export * from './CommandPaletteModal';
+export * from './NotificationsDrawer';
+export * from './WhatsAppDigestModal';
