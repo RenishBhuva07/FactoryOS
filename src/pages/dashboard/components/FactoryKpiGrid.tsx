@@ -12,7 +12,9 @@ export interface FactoryKpiGridProps {
   attendance: WorkforceAttendanceKpi;
   orders: ActiveOrdersKpi;
   machineStatus: MachineStatusKpi;
+  onNavigateOutput?: () => void;
   onNavigateRoster?: () => void;
+  onNavigateOrders?: () => void;
   onNavigateMachines?: () => void;
   className?: string;
 }
@@ -22,7 +24,9 @@ export const FactoryKpiGrid: React.FC<FactoryKpiGridProps> = ({
   attendance,
   orders,
   machineStatus,
+  onNavigateOutput,
   onNavigateRoster,
+  onNavigateOrders,
   onNavigateMachines,
   className = "",
 }) => {
@@ -60,10 +64,19 @@ export const FactoryKpiGrid: React.FC<FactoryKpiGridProps> = ({
 
         <div className="pt-3.5 mt-2 border-t border-white/20 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-white/80 font-medium">Target Achieved</span>
-            <span className="font-bold text-white tabular-nums">
-              {output.targetAchievedPercent}%
+            <span className="text-white/80 font-medium">
+              Target Achieved: {output.targetAchievedPercent}%
             </span>
+            <button
+              type="button"
+              onClick={onNavigateOutput}
+              className="text-xs font-semibold text-[#CFE8E1] hover:text-white flex items-center gap-0.5 shrink-0 cursor-pointer"
+            >
+              <span>Floor view</span>
+              <span className="material-symbols-outlined text-[14px]">
+                chevron_right
+              </span>
+            </button>
           </div>
           <PillProgressBar
             value={output.produced}
@@ -148,14 +161,25 @@ export const FactoryKpiGrid: React.FC<FactoryKpiGridProps> = ({
           </div>
         </div>
 
-        <div className="pt-3.5 mt-2 border-t border-[#DFECF3] space-y-1">
-          <p className="text-xs text-[#566E7F] font-medium truncate">
-            {orders.readyForDispatchCount} Ready for Dispatch •{" "}
-            {orders.qcPendingCount} QC Pending
-          </p>
-          <p className="text-xs font-bold text-[#002941] tabular-nums">
-            {orders.activePipelineValue} Active Pipeline
-          </p>
+        <div className="pt-3.5 mt-2 border-t border-[#DFECF3] flex items-center justify-between gap-2 text-xs">
+          <div className="space-y-0.5 min-w-0">
+            <p className="text-xs text-[#566E7F] font-medium truncate">
+              {orders.readyForDispatchCount} Ready • {orders.qcPendingCount} QC
+            </p>
+            <p className="text-xs font-bold text-[#002941] tabular-nums truncate">
+              {orders.activePipelineValue} Pipeline
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onNavigateOrders}
+            className="text-xs font-semibold text-[#002941] hover:text-[#2D8576] flex items-center gap-0.5 shrink-0 cursor-pointer"
+          >
+            <span>Orders</span>
+            <span className="material-symbols-outlined text-[14px]">
+              chevron_right
+            </span>
+          </button>
         </div>
       </Card>
 
