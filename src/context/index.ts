@@ -12,3 +12,7 @@ export { LayoutProvider } from "./LayoutContext";
 export { LayoutContext } from "./layoutContextDef";
 export type { LayoutContextType } from "./layoutContextDef";
 export { useLayout } from "./useLayout";
+
+export { FactoryStoreProvider } from "./FactoryStoreContext";
+export { FactoryStoreContext } from "./factoryStoreContextDef";
+export { useFactoryStore } from "./useFactoryStore";
