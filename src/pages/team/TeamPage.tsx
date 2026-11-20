@@ -1,34 +1,37 @@
-import React, { useState } from 'react';
-import { AppTopHeader } from '../../components/layout';
+import React, { useState, useMemo } from "react";
+import { AppTopHeader } from "../../components/layout";
 import {
   TeamHeader,
   TeamKpiGrid,
   ShopfloorRosterTable,
   StationCoverageCard,
   ManualPunchModal,
-} from './components';
-import {
-  MOCK_TEAM_KPIS,
-  MOCK_TEAM_ROSTER,
-  MOCK_STATION_COVERAGE,
-} from '../../data/mockTeamData';
-import type { TeamMemberRoster } from '../../types/team';
+} from "./components";
+import { MOCK_TEAM_KPIS, MOCK_STATION_COVERAGE } from "../../data/mockTeamData";
+import { useFactoryStore } from "../../context/useFactoryStore";
+import { downloadCsv } from "../../utils/csvExport";
+import type { TeamMemberRoster, TeamAttendanceKpis } from "../../types/team";
 
 export const TeamPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('roster');
-  const [roster, setRoster] = useState<TeamMemberRoster[]>(MOCK_TEAM_ROSTER);
+  const [activeTab, setActiveTab] = useState("roster");
   const [isPunchModalOpen, setIsPunchModalOpen] = useState(false);
+  const [filterOnlyAbsent, setFilterOnlyAbsent] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const displayedRoster = React.useMemo(() => {
-    if (activeTab === 'coverage') {
-      return roster.filter((m) => m.status === 'on_spindle');
+  const { attendanceRoster, workforceAttendance, updateAttendance } =
+    useFactoryStore();
+
+  const displayedRoster = useMemo(() => {
+    let result = attendanceRoster;
+    if (filterOnlyAbsent) {
+      result = result.filter((m) => m.status === "absent");
+    } else if (activeTab === "coverage") {
+      result = result.filter((m) => m.status === "on_spindle");
+    } else if (activeTab === "overtime") {
+      result = result.filter((m) => m.status === "overtime");
     }
-    if (activeTab === 'overtime') {
-      return roster.filter((m) => m.status === 'overtime');
-    }
-    return roster;
-  }, [roster, activeTab]);
+    return result;
+  }, [attendanceRoster, activeTab, filterOnlyAbsent]);
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -39,44 +42,80 @@ export const TeamPage: React.FC = () => {
 
   const handleManualPunchSubmit = (data: {
     memberId: string;
-    punchType: 'present' | 'overtime' | 'reliever' | 'half_day';
+    punchType: "present" | "overtime" | "reliever" | "half_day";
     station: string;
     notes: string;
   }) => {
-    setRoster((prev) =>
-      prev.map((m) =>
-        m.id === data.memberId
-          ? {
-              ...m,
-              status:
-                data.punchType === 'overtime'
-                  ? 'overtime'
-                  : data.punchType === 'half_day'
-                  ? 'on_break'
-                  : 'on_spindle',
-              statusLabel:
-                data.punchType === 'overtime'
-                  ? 'Overtime Shift'
-                  : data.punchType === 'half_day'
-                  ? 'Half-Day Leave'
-                  : 'On Spindle',
-              assignedStation: data.station || m.assignedStation,
-            }
-          : m
-      )
+    const statusToStore =
+      data.punchType === "overtime"
+        ? ("overtime" as const)
+        : data.punchType === "half_day"
+          ? ("on_break" as const)
+          : ("on_spindle" as const);
+
+    updateAttendance(data.memberId, statusToStore, data.station);
+    showToast(
+      `Biometric punch overridden: Operator assigned to ${data.station || "duty station"}.`,
     );
-    showToast(`Biometric punch overridden: Operator assigned to ${data.station}.`);
+  };
+
+  const handleExportRoster = () => {
+    const headers = [
+      "Name",
+      "Role",
+      "Assigned Station",
+      "Shift",
+      "Punch-in Time",
+      "Status",
+    ];
+    const rows = attendanceRoster.map((m) => [
+      m.name,
+      m.role,
+      m.assignedStation,
+      m.shift,
+      m.punchInTime,
+      m.statusLabel,
+    ]);
+    downloadCsv("FactoryOS_Shift_Attendance_Roster.csv", headers, rows);
+    showToast(
+      `Attendance roster exported to CSV (${attendanceRoster.length} active operators).`,
+    );
   };
 
   const handleAction = (member: TeamMemberRoster) => {
-    showToast(`Station logs opened for ${member.name} (${member.assignedStation}).`);
+    showToast(
+      `Station logs opened for ${member.name} (${member.assignedStation}).`,
+    );
+  };
+
+  const calculatedPresentPercent =
+    Math.round(
+      (workforceAttendance.present / Math.max(1, workforceAttendance.total)) *
+        100 *
+        10,
+    ) / 10;
+
+  const dynamicTeamKpis: TeamAttendanceKpis = {
+    ...MOCK_TEAM_KPIS,
+    presentCount: workforceAttendance.present,
+    totalShiftCount: workforceAttendance.total,
+    presentPercent: calculatedPresentPercent,
+    criticalStationAbsenceCount: workforceAttendance.absent,
+    criticalStationDetail:
+      workforceAttendance.absent > 0
+        ? `${workforceAttendance.absent} operators absent or on leave`
+        : "All designated stations fully manned",
   };
 
   const teamTabs = [
-    { id: 'roster', label: 'Shift A Roster', badge: String(roster.length) },
-    { id: 'coverage', label: 'Station Coverage' },
-    { id: 'biometric', label: 'Biometric Audit' },
-    { id: 'overtime', label: 'Overtime Register' },
+    {
+      id: "roster",
+      label: "Shift A Roster",
+      badge: String(attendanceRoster.length),
+    },
+    { id: "coverage", label: "Station Coverage" },
+    { id: "biometric", label: "Biometric Audit" },
+    { id: "overtime", label: "Overtime Register" },
   ];
 
   return (
@@ -84,7 +123,10 @@ export const TeamPage: React.FC = () => {
       <AppTopHeader
         tabs={teamTabs}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          setFilterOnlyAbsent(false);
+        }}
         roleBadge="WORKFORCE"
       />
 
@@ -94,25 +136,36 @@ export const TeamPage: React.FC = () => {
             <span className="material-symbols-outlined text-[20px] text-[#CFE8E1]">
               check_circle
             </span>
-            <span className="text-xs sm:text-sm font-medium">{toastMessage}</span>
+            <span className="text-xs sm:text-sm font-medium">
+              {toastMessage}
+            </span>
             <button
               type="button"
               onClick={() => setToastMessage(null)}
               className="ml-2 text-white/70 hover:text-white"
             >
-              <span className="material-symbols-outlined text-[16px]">close</span>
+              <span className="material-symbols-outlined text-[16px]">
+                close
+              </span>
             </button>
           </div>
         )}
 
         <TeamHeader
-          onExportRoster={() => showToast('Attendance roster exported to CSV.')}
+          onExportRoster={handleExportRoster}
           onManualPunch={() => setIsPunchModalOpen(true)}
         />
 
         <TeamKpiGrid
-          metrics={MOCK_TEAM_KPIS}
-          onFilterAbsent={() => showToast('Filtered: Showing 2 absent operators requiring relief allocation.')}
+          metrics={dynamicTeamKpis}
+          onFilterAbsent={() => {
+            setFilterOnlyAbsent((prev) => !prev);
+            showToast(
+              !filterOnlyAbsent
+                ? `Filtered: Showing ${workforceAttendance.absent} absent operators requiring relief allocation.`
+                : "Showing full roster.",
+            );
+          }}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start flex-1 min-h-0">
@@ -131,7 +184,7 @@ export const TeamPage: React.FC = () => {
         <ManualPunchModal
           isOpen={isPunchModalOpen}
           onClose={() => setIsPunchModalOpen(false)}
-          roster={roster}
+          roster={attendanceRoster}
           onSubmit={handleManualPunchSubmit}
         />
       </main>

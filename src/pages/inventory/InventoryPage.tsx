@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AppTopHeader } from '../../components/layout';
+import React, { useState } from "react";
+import { AppTopHeader } from "../../components/layout";
 import {
   InventoryHeader,
   SafetyStockAlertBanner,
@@ -7,27 +7,38 @@ import {
   StoresInventoryTable,
   InventoryBottomCards,
   NewPurchaseRequisitionModal,
-} from './components';
+  GoodsReceiptModal,
+  AdjustStockModal,
+} from "./components";
 import {
   MOCK_INVENTORY_KPIS,
-  MOCK_INVENTORY_ITEMS,
   MOCK_SUPPLIER_RELIABILITY,
-} from '../../data/mockInventoryData';
-import type { InventoryItem, InventoryKpiMetrics } from '../../types/inventory';
+} from "../../data/mockInventoryData";
+import { useFactoryStore } from "../../context";
+import type { InventoryItem } from "../../types/inventory";
 
 export const InventoryPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('stores');
-  const [items] = useState<InventoryItem[]>(MOCK_INVENTORY_ITEMS);
-  const [kpis, setKpis] = useState<InventoryKpiMetrics>(MOCK_INVENTORY_KPIS);
+  const { inventoryItems, adjustStock, recordGoodsReceipt } = useFactoryStore();
+
+  const [activeTab, setActiveTab] = useState("stores");
+  const [selectedItemForAdjustment, setSelectedItemForAdjustment] =
+    useState<InventoryItem | null>(null);
   const [isRequisitionModalOpen, setIsRequisitionModalOpen] = useState(false);
+  const [isGrnModalOpen, setIsGrnModalOpen] = useState(false);
+  const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const displayedItems = React.useMemo(() => {
-    if (activeTab === 'safety') {
-      return items.filter((i) => i.status === 'low_stock' || i.status === 'reorder_due' || i.currentStock <= i.reorderLevel);
+    if (activeTab === "safety") {
+      return inventoryItems.filter(
+        (i) =>
+          i.status === "low_stock" ||
+          i.status === "reorder_due" ||
+          i.currentStock <= i.reorderLevel,
+      );
     }
-    return items;
-  }, [items, activeTab]);
+    return inventoryItems;
+  }, [inventoryItems, activeTab]);
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -47,33 +58,58 @@ export const InventoryPage: React.FC = () => {
     unit: string;
     estimatedCost: number;
     supplierName: string;
-    urgencyLevel: 'standard' | 'critical';
   }) => {
-    setKpis((prev) => ({
-      ...prev,
-      pendingInboundCount: prev.pendingInboundCount + 1,
-      pendingInboundDescription: `${data.materialName.slice(0, 20)}... pending vendor confirmation`,
-    }));
-    showToast(`Purchase Requisition (₹${data.estimatedCost.toLocaleString('en-IN')}) submitted for ${data.materialName}!`);
+    showToast(
+      `Purchase Requisition (₹${data.estimatedCost.toLocaleString("en-IN")}) issued for ${data.materialName} to ${data.supplierName}!`,
+    );
   };
 
   const handleGoodsReceipt = () => {
-    showToast('GRN Entry Form opened: Scan delivery challan QR or enter vendor invoice.');
+    setIsGrnModalOpen(true);
+  };
+
+  const handleGrnSubmit = (params: {
+    poOrInvoice: string;
+    items: { itemId: string; quantityReceived: number }[];
+    supplierName: string;
+  }) => {
+    recordGoodsReceipt(params);
+    showToast(
+      `Goods Receipt Note registered! Stock updated for received consignment.`,
+    );
   };
 
   const handleActionMenu = (item: InventoryItem) => {
-    showToast(`Quick actions for ${item.materialName}: Reorder, adjust stock, or view bin movement history.`);
+    setSelectedItemForAdjustment(item);
+    setIsAdjustModalOpen(true);
   };
 
-  const handleCreateGrn = () => {
-    showToast('Drafting new Goods Receipt Note (#2024-090).');
+  const handleStockAdjustSubmit = (
+    itemId: string,
+    delta: number,
+    reason: string,
+  ) => {
+    adjustStock(itemId, delta, reason);
+    showToast(`Stock updated: ${delta > 0 ? "+" : ""}${delta} (${reason}).`);
   };
+
+  const lowStockCount = inventoryItems.filter(
+    (i) => i.status === "low_stock" || i.status === "reorder_due",
+  ).length;
 
   const inventoryTabs = [
-    { id: 'stores', label: 'Stores Master', badge: String(items.length) },
-    { id: 'bins', label: 'Bin Cards' },
-    { id: 'safety', label: 'Safety Stock Alerts', badge: '2' },
-    { id: 'suppliers', label: 'Supplier Scorecards' },
+    {
+      id: "stores",
+      label: "Stores Master",
+      badge: String(inventoryItems.length),
+    },
+    { id: "bins", label: "Bin Cards" },
+    {
+      id: "safety",
+      label: "Safety Stock Alerts",
+      badge: lowStockCount > 0 ? String(lowStockCount) : undefined,
+    },
+    { id: "suppliers", label: "Supplier Scorecards" },
   ];
 
   return (
@@ -91,13 +127,17 @@ export const InventoryPage: React.FC = () => {
             <span className="material-symbols-outlined text-[20px] text-[#CFE8E1]">
               check_circle
             </span>
-            <span className="text-xs sm:text-sm font-medium">{toastMessage}</span>
+            <span className="text-xs sm:text-sm font-medium">
+              {toastMessage}
+            </span>
             <button
               type="button"
               onClick={() => setToastMessage(null)}
               className="ml-2 text-white/70 hover:text-white"
             >
-              <span className="material-symbols-outlined text-[16px]">close</span>
+              <span className="material-symbols-outlined text-[16px]">
+                close
+              </span>
             </button>
           </div>
         )}
@@ -107,19 +147,26 @@ export const InventoryPage: React.FC = () => {
           onNewPurchaseOrder={handleOpenRequisitionModal}
         />
 
-        <SafetyStockAlertBanner onGenerateRequisition={handleOpenRequisitionModal} />
+        {lowStockCount > 0 && (
+          <SafetyStockAlertBanner
+            onGenerateRequisition={handleOpenRequisitionModal}
+          />
+        )}
 
         <InventoryKpiGrid
-          metrics={kpis}
-          onFilterLowStock={() => showToast('Filtered: Showing 2 items breached below reorder level.')}
+          metrics={MOCK_INVENTORY_KPIS}
+          onFilterLowStock={() => setActiveTab("safety")}
         />
 
-        <StoresInventoryTable items={displayedItems} onActionMenu={handleActionMenu} />
+        <StoresInventoryTable
+          items={displayedItems}
+          onActionMenu={handleActionMenu}
+        />
 
-        {(activeTab === 'stores' || activeTab === 'suppliers') && (
+        {(activeTab === "stores" || activeTab === "suppliers") && (
           <InventoryBottomCards
             suppliers={MOCK_SUPPLIER_RELIABILITY}
-            onCreateGrn={handleCreateGrn}
+            onCreateGrn={handleGoodsReceipt}
           />
         )}
       </main>
@@ -128,6 +175,20 @@ export const InventoryPage: React.FC = () => {
         isOpen={isRequisitionModalOpen}
         onClose={() => setIsRequisitionModalOpen(false)}
         onSubmit={handleRequisitionSubmit}
+      />
+
+      <GoodsReceiptModal
+        isOpen={isGrnModalOpen}
+        onClose={() => setIsGrnModalOpen(false)}
+        items={inventoryItems}
+        onSubmit={handleGrnSubmit}
+      />
+
+      <AdjustStockModal
+        isOpen={isAdjustModalOpen}
+        onClose={() => setIsAdjustModalOpen(false)}
+        item={selectedItemForAdjustment}
+        onAdjust={handleStockAdjustSubmit}
       />
     </>
   );

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AppTopHeader } from '../../components/layout';
+import React, { useState } from "react";
+import { AppTopHeader } from "../../components/layout";
 import {
   DispatchHeader,
   DispatchKpiGrid,
@@ -7,21 +7,24 @@ import {
   LoadingBayStatusCard,
   EWayBillSyncCard,
   ScheduleDispatchModal,
-} from './components';
+  BulkGatePassModal,
+} from "./components";
 import {
   MOCK_DISPATCH_KPIS,
-  MOCK_OUTBOUND_SHIPMENTS,
   MOCK_LOADING_BAYS,
   MOCK_EWAY_BILL_SYNC,
-} from '../../data/mockDispatchData';
-import type { OutboundShipment } from '../../types/dispatch';
+} from "../../data/mockDispatchData";
+import { useFactoryStore } from "../../context/useFactoryStore";
+import type { OutboundShipment } from "../../types/dispatch";
 
 export const DispatchPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('active');
+  const [activeTab, setActiveTab] = useState("active");
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-  const [shipments, setShipments] = useState<OutboundShipment[]>(MOCK_OUTBOUND_SHIPMENTS);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [kpis, setKpis] = useState(MOCK_DISPATCH_KPIS);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const { dispatches, scheduleDispatch, signGatePass } = useFactoryStore();
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -31,35 +34,28 @@ export const DispatchPage: React.FC = () => {
   };
 
   const handleTrackGps = (shipment: OutboundShipment) => {
-    showToast(`Live GPS tracking opened for ${shipment.carrierName} (${shipment.vehicleNumber}).`);
+    showToast(
+      `Live GPS tracking opened for ${shipment.carrierName} (${shipment.vehicleNumber}).`,
+    );
   };
 
   const handleSignEWayBill = (shipment: OutboundShipment) => {
-    showToast(`E-Way Bill signed & digital gate pass generated for ${shipment.consignmentNumber}.`);
+    signGatePass(shipment.id);
+    showToast(
+      `E-Way Bill signed & digital gate pass generated for ${shipment.consignmentNumber}.`,
+    );
   };
 
   const handleExpediteQc = (shipment: OutboundShipment) => {
-    setShipments((prev) =>
-      prev.map((s) =>
-        s.id === shipment.id
-          ? {
-              ...s,
-              status: 'loading',
-              statusLabel: 'Staging for Bay',
-              statusVariant: 'inProgress',
-              actionType: 'sign_eway',
-              gatePassNumber: '#GP-8833',
-              gatePassTime: 'Issued: Just now',
-            }
-          : s
-      )
-    );
+    signGatePass(shipment.id);
     setKpis((prev) => ({
       ...prev,
       delayedDispatchesCount: Math.max(0, prev.delayedDispatchesCount - 1),
-      delayedBatchInfo: 'All active consignments cleared for loading.',
+      delayedBatchInfo: "All active consignments cleared for loading.",
     }));
-    showToast(`QC expedited for ${shipment.consignmentNumber}! Consignment moved to Loading Dock.`);
+    showToast(
+      `QC expedited for ${shipment.consignmentNumber}! Consignment moved to Loading Dock.`,
+    );
   };
 
   const handleScheduleSubmit = (payload: {
@@ -69,38 +65,40 @@ export const DispatchPage: React.FC = () => {
     units: number;
     dockBay: string;
   }) => {
-    const newShipment: OutboundShipment = {
-      id: `dsp-${Date.now()}`,
-      consignmentNumber: `#DSP-${Math.floor(4022 + Math.random() * 100)}`,
-      clientName: payload.client,
-      clientLocation: 'Gujarat Industrial Corridor',
-      volumeUnits: payload.units,
-      volumePallets: Math.ceil(payload.units / 300),
-      productCategory: 'Finished Assemblies',
-      carrierName: payload.carrier,
-      vehicleNumber: payload.vehicle,
-      gatePassNumber: `#GP-${Math.floor(8834 + Math.random() * 100)}`,
-      gatePassTime: 'Issued: Just now',
-      status: 'loading',
-      statusLabel: `Dock Staged (${payload.dockBay})`,
-      statusVariant: 'inProgress',
-      actionType: 'sign_eway',
-    };
+    const created = scheduleDispatch({
+      client: payload.client,
+      carrier: payload.carrier,
+      vehicle: payload.vehicle,
+      units: payload.units,
+      dockBay: payload.dockBay,
+    });
 
-    setShipments((prev) => [newShipment, ...prev]);
     setKpis((prev) => ({
       ...prev,
       dispatchesTodayDone: prev.dispatchesTodayDone + 1,
-      inTransitValue: '₹52.4 Lakh',
+      inTransitValue: "₹52.4 Lakh",
     }));
-    showToast(`Consignment ${newShipment.consignmentNumber} scheduled to ${payload.carrier}!`);
+    showToast(
+      `Consignment ${created.consignmentNumber} scheduled to ${payload.carrier}!`,
+    );
+  };
+
+  const handleSignBulkGatePass = (selectedIds: string[]) => {
+    selectedIds.forEach((id) => signGatePass(id));
+    showToast(
+      `Bulk digital gate passes authorized for ${selectedIds.length} consignments.`,
+    );
   };
 
   const dispatchTabs = [
-    { id: 'active', label: 'Active Shipments', badge: String(shipments.length) },
-    { id: 'bays', label: 'Loading Bays', badge: '3' },
-    { id: 'eway', label: 'E-Way Portal' },
-    { id: 'corridor', label: 'Gujarat Corridor' },
+    {
+      id: "active",
+      label: "Active Shipments",
+      badge: String(dispatches.length),
+    },
+    { id: "bays", label: "Loading Bays", badge: "3" },
+    { id: "eway", label: "E-Way Portal" },
+    { id: "corridor", label: "Gujarat Corridor" },
   ];
 
   return (
@@ -118,35 +116,39 @@ export const DispatchPage: React.FC = () => {
             <span className="material-symbols-outlined text-[20px] text-[#CFE8E1]">
               check_circle
             </span>
-            <span className="text-xs sm:text-sm font-medium">{toastMessage}</span>
+            <span className="text-xs sm:text-sm font-medium">
+              {toastMessage}
+            </span>
             <button
               type="button"
               onClick={() => setToastMessage(null)}
               className="ml-2 text-white/70 hover:text-white"
             >
-              <span className="material-symbols-outlined text-[16px]">close</span>
+              <span className="material-symbols-outlined text-[16px]">
+                close
+              </span>
             </button>
           </div>
         )}
 
         <DispatchHeader
-          onGenerateBulkGatePass={() =>
-            showToast('Bulk Gate Pass generated for 18 active corridor vehicles.')
-          }
+          onGenerateBulkGatePass={() => setIsBulkModalOpen(true)}
           onScheduleDispatch={() => setIsScheduleModalOpen(true)}
         />
 
         <DispatchKpiGrid
           metrics={kpis}
           onFilterDelayed={() =>
-            showToast('Filtered: Showing consignments requiring QC expedite clearance.')
+            showToast(
+              "Filtered: Showing consignments requiring QC expedite clearance.",
+            )
           }
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start flex-1 min-h-0">
           <div className="lg:col-span-8 flex flex-col">
             <ActiveShipmentsTable
-              shipments={shipments}
+              shipments={dispatches}
               onTrackGps={handleTrackGps}
               onSignEWayBill={handleSignEWayBill}
               onExpediteQc={handleExpediteQc}
@@ -164,6 +166,13 @@ export const DispatchPage: React.FC = () => {
         isOpen={isScheduleModalOpen}
         onClose={() => setIsScheduleModalOpen(false)}
         onSubmit={handleScheduleSubmit}
+      />
+
+      <BulkGatePassModal
+        isOpen={isBulkModalOpen}
+        onClose={() => setIsBulkModalOpen(false)}
+        shipments={dispatches}
+        onSignBulkGatePass={handleSignBulkGatePass}
       />
     </>
   );

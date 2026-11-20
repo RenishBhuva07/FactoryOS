@@ -1,26 +1,32 @@
-import React, { useState } from 'react';
-import { AppTopHeader } from '../../components/layout';
+import React, { useState } from "react";
+import { AppTopHeader } from "../../components/layout";
 import {
   ProductionLogsHeader,
   ProductionLogsFilterBar,
   ProductionLogsFeed,
   SupervisorSignOffsCard,
   ScrapBreakdownCard,
-} from './components';
+} from "./components";
+import { ManualBatchSlipModal } from "../production/components/ManualBatchSlipModal";
 import {
-  MOCK_PRODUCTION_LOGS,
   MOCK_SUPERVISOR_SIGN_OFFS,
   MOCK_SCRAP_BREAKDOWN,
-} from '../../data/mockProductionData';
-import type { ProductionLogEntry } from '../../types/production';
+} from "../../data/mockProductionData";
+import { useFactoryStore } from "../../context/useFactoryStore";
+import { downloadCsv } from "../../utils/csvExport";
+import type { ProductionLogEntry } from "../../types/production";
 
 export const ProductionLogsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('shift-a');
-  const [logs] = useState<ProductionLogEntry[]>(MOCK_PRODUCTION_LOGS);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMachine, setSelectedMachine] = useState('All Machines (8 Units)');
-  const [selectedShift, setSelectedShift] = useState('Shift A (08:00 - 16:30)');
+  const [activeTab, setActiveTab] = useState("shift-a");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMachine, setSelectedMachine] = useState(
+    "All Machines (8 Units)",
+  );
+  const [selectedShift, setSelectedShift] = useState("Shift A (08:00 - 16:30)");
+  const [isNewSlipModalOpen, setIsNewSlipModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const { productionLogs, logProduction } = useFactoryStore();
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -29,7 +35,7 @@ export const ProductionLogsPage: React.FC = () => {
     }, 4000);
   };
 
-  const filteredLogs = logs.filter((log) => {
+  const filteredLogs = productionLogs.filter((log) => {
     const q = searchQuery.toLowerCase();
     const matchesSearch =
       log.jobCard.toLowerCase().includes(q) ||
@@ -40,24 +46,74 @@ export const ProductionLogsPage: React.FC = () => {
   });
 
   const handleDownloadAuditLogs = () => {
-    showToast('Audit logs exported to CSV with supervisor digital signatures.');
+    const csvHeaders = [
+      "Shift",
+      "Cycle Time",
+      "Job Card",
+      "Part Name",
+      "Machine",
+      "Operator",
+      "Output Units",
+      "Scrap Units",
+      "Scrap Reason",
+      "Verified By",
+    ];
+    const csvRows = filteredLogs.map((l) => [
+      l.shift,
+      l.cycleTime,
+      l.jobCard,
+      l.partName,
+      l.machineName,
+      l.operatorName,
+      String(l.outputUnits),
+      String(l.scrapUnits),
+      l.scrapReason || "None",
+      l.verifiedBy || "Pending",
+    ]);
+    downloadCsv("FactoryOS_Production_Audit_Logs.csv", csvHeaders, csvRows);
+    showToast(
+      `Audit logs exported to CSV (${filteredLogs.length} verified records).`,
+    );
   };
 
-  const handleNewLogEntry = () => {
-    showToast('New manual production slip form opened.');
+  const handleNewBatchSubmit = (batch: {
+    sectionMachine: string;
+    jobCardNumber: string;
+    targetUnits: number;
+    goodUnits: number;
+    scrapUnits: number;
+    defectReason: string;
+    operatorNotes: string;
+  }) => {
+    logProduction({
+      jobCard: batch.jobCardNumber,
+      machine: batch.sectionMachine,
+      goodUnits: batch.goodUnits,
+      scrapUnits: batch.scrapUnits,
+      defectReason: batch.defectReason,
+      operatorName: "Floor Supervisor (Manual)",
+      notes: batch.operatorNotes,
+    });
+    showToast(
+      `Production slip logged for ${batch.jobCardNumber}: ${batch.goodUnits} units recorded.`,
+    );
   };
 
   const handleLogClick = (log: ProductionLogEntry) => {
     showToast(
-      `Viewing digital shift slip: ${log.machineName} - ${log.jobCard} (${log.outputUnits} units output).`
+      `Viewing digital shift slip: ${log.machineName} - ${log.jobCard} (${log.outputUnits} units output).`,
     );
   };
 
   const logTabs = [
-    { id: 'shift-a', label: 'Shift A Logs', badge: '3' },
-    { id: 'handovers', label: 'Supervisor Sign-Offs', badge: '2' },
-    { id: 'scraplog', label: 'Scrap Register' },
-    { id: 'audit', label: 'Audit Trail' },
+    {
+      id: "shift-a",
+      label: "Shift A Logs",
+      badge: String(filteredLogs.length),
+    },
+    { id: "handovers", label: "Supervisor Sign-Offs", badge: "2" },
+    { id: "scraplog", label: "Scrap Register" },
+    { id: "audit", label: "Audit Trail" },
   ];
 
   return (
@@ -75,20 +131,24 @@ export const ProductionLogsPage: React.FC = () => {
             <span className="material-symbols-outlined text-[20px] text-[#CFE8E1]">
               check_circle
             </span>
-            <span className="text-xs sm:text-sm font-medium">{toastMessage}</span>
+            <span className="text-xs sm:text-sm font-medium">
+              {toastMessage}
+            </span>
             <button
               type="button"
               onClick={() => setToastMessage(null)}
               className="ml-2 text-white/70 hover:text-white"
             >
-              <span className="material-symbols-outlined text-[16px]">close</span>
+              <span className="material-symbols-outlined text-[16px]">
+                close
+              </span>
             </button>
           </div>
         )}
 
         <ProductionLogsHeader
           onDownloadAuditLogs={handleDownloadAuditLogs}
-          onNewLogEntry={handleNewLogEntry}
+          onNewLogEntry={() => setIsNewSlipModalOpen(true)}
         />
 
         <ProductionLogsFilterBar
@@ -98,12 +158,14 @@ export const ProductionLogsPage: React.FC = () => {
           onMachineChange={setSelectedMachine}
           selectedShift={selectedShift}
           onShiftChange={setSelectedShift}
-          onToggleFilters={() => showToast('Advanced log filters toggled.')}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start flex-1 min-h-0">
           <div className="lg:col-span-8 flex flex-col">
-            <ProductionLogsFeed logs={filteredLogs} onLogClick={handleLogClick} />
+            <ProductionLogsFeed
+              logs={filteredLogs}
+              onLogClick={handleLogClick}
+            />
           </div>
 
           <div className="lg:col-span-4 flex flex-col gap-3.5">
@@ -112,6 +174,12 @@ export const ProductionLogsPage: React.FC = () => {
           </div>
         </div>
       </main>
+
+      <ManualBatchSlipModal
+        isOpen={isNewSlipModalOpen}
+        onClose={() => setIsNewSlipModalOpen(false)}
+        onSubmit={handleNewBatchSubmit}
+      />
     </>
   );
 };
