@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from "react";
 import {
   OrdersTopHeader,
   OrdersHeader,
@@ -9,37 +9,68 @@ import {
   DispatchChallanStagingCard,
   NewPurchaseOrderModal,
   OrderDetailDrawer,
-} from './components';
+} from "./components";
 import {
   OrderExecutionTable,
   BomReadinessCard,
-} from '../orders-management/components';
+} from "../orders-management/components";
 import {
-  MOCK_ORDERS_KPIS,
-  MOCK_ACTIVE_ORDER_COMMITMENTS,
   MOCK_REPEAT_PO_TEMPLATES,
   MOCK_CLIENT_TIERS,
   MOCK_DISPATCH_CHALLAN,
-} from '../../data/mockOrdersData';
-import {
-  MOCK_ORDER_EXECUTION_ITEMS,
-  MOCK_BOM_READINESS,
-} from '../../data/mockOrdersManagementData';
-import type { OrderCommitment, RepeatPoTemplate } from '../../types/orders';
+} from "../../data/mockOrdersData";
+import { MOCK_BOM_READINESS } from "../../data/mockOrdersManagementData";
+import { useFactoryStore, useAuth } from "../../context";
+import type {
+  OrderCommitment,
+  RepeatPoTemplate,
+  OrdersKpiMetrics,
+} from "../../types/orders";
 
 export const OrdersPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('active');
+  const { user } = useAuth();
+  const { orders, orderExecutions, createOrder, updateOrderStatus } =
+    useFactoryStore();
+
+  const [activeTab, setActiveTab] = useState("active");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalInitialData, setModalInitialData] = useState<Partial<OrderCommitment> | undefined>(undefined);
-  const [selectedOrder, setSelectedOrder] = useState<OrderCommitment | null>(null);
+  const [modalInitialData, setModalInitialData] = useState<
+    Partial<OrderCommitment> | undefined
+  >(undefined);
+  const [selectedOrder, setSelectedOrder] = useState<OrderCommitment | null>(
+    null,
+  );
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const [orders, setOrders] = useState<OrderCommitment[]>(MOCK_ACTIVE_ORDER_COMMITMENTS);
-  const [metrics, setMetrics] = useState(MOCK_ORDERS_KPIS);
+  const metrics = useMemo<OrdersKpiMetrics>(() => {
+    const active = orders.filter((o) => o.status !== "completed");
+    const totalVal = orders.reduce((sum, o) => sum + o.contractValue, 0);
+    const inProd = orders.filter(
+      (o) =>
+        o.status === "in_machining" ||
+        o.status === "in_production" ||
+        o.status === "in_assembly",
+    ).length;
+    const qcPending = orders.filter(
+      (o) => o.needsQc || o.status === "awaiting_qc",
+    ).length;
 
-  const displayedOrders = React.useMemo(() => {
-    if (activeTab === 'staging') {
-      return orders.filter((o) => o.status === 'ready_for_dispatch');
+    return {
+      totalActiveOrders: active.length,
+      pipelineValue: `₹${(totalVal / 100000).toFixed(1)} Lakh committed pipeline`,
+      inProductionBatches: inProd,
+      activeLines: "Line 01 (CNC), Line 02 (Machining)",
+      onTimeDeliveryRate: 95.8,
+      onTimeDeliveryDelta: "+0.8%",
+      onTimeDeliverySubtext: "Target >95% on schedule",
+      atRiskOrdersCount: qcPending,
+      atRiskNote: `${qcPending} QC pending, 0 overdue commitments`,
+    };
+  }, [orders]);
+
+  const displayedOrders = useMemo(() => {
+    if (activeTab === "staging") {
+      return orders.filter((o) => o.status === "ready_for_dispatch");
     }
     return orders;
   }, [orders, activeTab]);
@@ -53,16 +84,16 @@ export const OrdersPage: React.FC = () => {
 
   const handleExportCsv = () => {
     const headers = [
-      'PO Number',
-      'Client Name',
-      'Part Description',
-      'Quantity',
-      'Unit',
-      'Dispatch Due',
-      'Assigned Machine',
-      'Contract Value (INR)',
-      'Status',
-      'Progress %',
+      "PO Number",
+      "Client Name",
+      "Part Description",
+      "Quantity",
+      "Unit",
+      "Dispatch Due",
+      "Assigned Machine",
+      "Contract Value (INR)",
+      "Status",
+      "Progress %",
     ];
 
     const rows = orders.map((o) => [
@@ -79,66 +110,42 @@ export const OrdersPage: React.FC = () => {
     ]);
 
     const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
 
     const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'FactoryOS_Orders_Commitments.csv');
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "FactoryOS_Orders_Commitments.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    showToast('Orders exported to CSV successfully.');
+    showToast("Orders exported to CSV successfully.");
   };
 
   const handleCreateOrder = (newOrderData: Partial<OrderCommitment>) => {
-    const createdOrder: OrderCommitment = {
-      id: `ord-${Date.now()}`,
-      poNumber: newOrderData.poNumber || `PO #ORD-${Math.floor(1000 + Math.random() * 9000)}`,
-      clientName: newOrderData.clientName || 'New Client',
-      clientInitials: newOrderData.clientInitials || 'NC',
-      partDescription: newOrderData.partDescription || 'Manufactured Components',
+    const created = createOrder({
+      poNumber: newOrderData.poNumber,
+      clientName: newOrderData.clientName || "New MSME Client",
+      clientInitials: newOrderData.clientInitials,
+      partDescription:
+        newOrderData.partDescription || "Precision Machined Parts",
       quantity: newOrderData.quantity || 500,
-      unit: newOrderData.unit || 'Units',
-      dispatchDue: newOrderData.dispatchDue || 'Nov 25, 17:00 IST',
-      isDispatchUrgent: false,
-      assignedMachine: newOrderData.assignedMachine || 'Line 01 (CNC)',
+      unit: newOrderData.unit || "Units",
+      dispatchDue: newOrderData.dispatchDue || "Next Week, 17:00 IST",
+      assignedMachine: newOrderData.assignedMachine || "Line 01 (CNC Lathe)",
       contractValue: newOrderData.contractValue || 250000,
-      currencySymbol: '₹',
-      status: 'in_machining',
-      statusLabel: 'In Machining',
-      statusVariant: 'inProgress',
-      progressPercent: 20,
-      needsQc: false,
-    };
+    });
 
-    setOrders((prev) => [createdOrder, ...prev]);
-    setMetrics((prev) => ({
-      ...prev,
-      totalActiveOrders: prev.totalActiveOrders + 1,
-    }));
-
-    showToast(`Order ${createdOrder.poNumber} created & line allocated.`);
+    showToast(`Order ${created.poNumber} created & line allocated.`);
   };
 
   const handleFastTrackQc = (order: OrderCommitment) => {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === order.id
-          ? {
-              ...o,
-              needsQc: false,
-              status: 'ready_for_dispatch',
-              statusLabel: 'Ready for Dispatch',
-              statusVariant: 'completed',
-              progressPercent: 100,
-            }
-          : o
-      )
+    updateOrderStatus(order.id, "ready_for_dispatch", 100);
+    showToast(
+      `Fast-Track QC cleared for ${order.poNumber}. Order staged for dispatch.`,
     );
-    showToast(`Fast-Track QC cleared for ${order.poNumber}. Order staged for dispatch.`);
   };
 
   const handleViewAllocation = (order: OrderCommitment) => {
@@ -162,8 +169,8 @@ export const OrdersPage: React.FC = () => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         brandName="FactoryOS"
-        userName="Oripio Studio"
-        userEmail="oripiostudio@gmail.com"
+        userName={user?.name || "Rajesh Bhai Patel"}
+        userEmail={user?.email || "rajesh@apexeng.in"}
       />
 
       <main className="flex-1 min-w-0 pl-2 pr-4 sm:pl-3 sm:pr-5 lg:pl-3 lg:pr-6 py-3 sm:py-3.5 space-y-3.5 w-full flex flex-col">
@@ -172,13 +179,17 @@ export const OrdersPage: React.FC = () => {
             <span className="material-symbols-outlined text-[20px] text-[#CFE8E1]">
               check_circle
             </span>
-            <span className="text-xs sm:text-sm font-medium">{toastMessage}</span>
+            <span className="text-xs sm:text-sm font-medium">
+              {toastMessage}
+            </span>
             <button
               type="button"
               onClick={() => setToastMessage(null)}
               className="ml-2 text-white/70 hover:text-white"
             >
-              <span className="material-symbols-outlined text-[16px]">close</span>
+              <span className="material-symbols-outlined text-[16px]">
+                close
+              </span>
             </button>
           </div>
         )}
@@ -196,31 +207,37 @@ export const OrdersPage: React.FC = () => {
         <OrdersKpiGrid
           metrics={metrics}
           onFilterAtRisk={() =>
-            showToast('Filtering orders requiring raw material or QC attention.')
+            showToast(
+              "Filtered: Showing orders requiring raw material or QC attention.",
+            )
           }
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start flex-1 min-h-0">
           <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
-            {activeTab === 'job_cards' ? (
+            {activeTab === "job_cards" ? (
               <OrderExecutionTable
-                orders={MOCK_ORDER_EXECUTION_ITEMS}
+                orders={orderExecutions}
                 onAction={(item) =>
-                  showToast(`Managing Job Card for ${item.poNumber}: Assigned to ${item.assignedLine}.`)
+                  showToast(
+                    `Job Card for ${item.poNumber}: Assigned to ${item.assignedLine}.`,
+                  )
                 }
               />
-            ) : activeTab === 'staging' ? (
+            ) : activeTab === "staging" ? (
               <DispatchChallanStagingCard
                 challan={MOCK_DISPATCH_CHALLAN}
                 onViewChallan={() =>
-                  showToast('Digital Gate Pass generated for Challan #DC-9021.')
+                  showToast("Digital Gate Pass generated for Challan #DC-9021.")
                 }
               />
-            ) : activeTab === 'templates' ? (
+            ) : activeTab === "templates" ? (
               <RepeatPoTemplatesCard
                 templates={MOCK_REPEAT_PO_TEMPLATES}
                 onReIssue={handleReIssueTemplate}
-                onRefresh={() => showToast('BOM templates refreshed from master catalog.')}
+                onRefresh={() =>
+                  showToast("BOM templates refreshed from master catalog.")
+                }
               />
             ) : (
               <ActiveOrdersList
@@ -233,21 +250,25 @@ export const OrdersPage: React.FC = () => {
           </div>
 
           <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-3.5">
-            {activeTab === 'job_cards' ? (
+            {activeTab === "job_cards" ? (
               <BomReadinessCard items={MOCK_BOM_READINESS} />
             ) : (
               <>
                 <RepeatPoTemplatesCard
                   templates={MOCK_REPEAT_PO_TEMPLATES}
                   onReIssue={handleReIssueTemplate}
-                  onRefresh={() => showToast('BOM templates refreshed from master catalog.')}
+                  onRefresh={() =>
+                    showToast("BOM templates refreshed from master catalog.")
+                  }
                 />
                 <ClientTierPipelineCard
                   tiers={MOCK_CLIENT_TIERS}
                   quarterLabel="Q4 Active"
                   challan={MOCK_DISPATCH_CHALLAN}
                   onViewChallan={(c) =>
-                    showToast(`${c.challanNumber} staging details: 17:30 local dispatch.`)
+                    showToast(
+                      `${c.challanNumber} staging details: 17:30 local dispatch.`,
+                    )
                   }
                 />
               </>
@@ -268,7 +289,10 @@ export const OrdersPage: React.FC = () => {
         isOpen={!!selectedOrder}
         onClose={() => setSelectedOrder(null)}
         onFastTrackQc={handleFastTrackQc}
-        onDispatchStaging={(o) => showToast(`Order ${o.poNumber} staged for dispatch challan.`)}
+        onDispatchStaging={(o) => {
+          updateOrderStatus(o.id, "ready_for_dispatch", 100);
+          showToast(`Order ${o.poNumber} staged for dispatch challan.`);
+        }}
       />
     </>
   );
