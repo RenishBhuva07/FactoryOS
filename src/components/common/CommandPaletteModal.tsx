@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSplash } from '../../context';
 
 export interface CommandPaletteModalProps {
   isOpen: boolean;
@@ -18,6 +19,9 @@ interface SearchItem {
 }
 
 const SEARCH_REGISTRY: SearchItem[] = [
+  // Core Actions & Startup
+  { id: 'action-replay-splash', title: 'Replay Startup Splash Screen', subtitle: 'Preview animated FactoryOS initial startup and telemetry sequence', category: 'Page', icon: 'play_circle', route: '', badge: 'ANIMATION', badgeColor: 'mint' },
+
   // Core Pages
   { id: 'page-overview', title: 'Dashboard Overview', subtitle: 'Factory KPI pulse, hourly output, attention alerts', category: 'Page', icon: 'grid_view', route: '/dashboard' },
   { id: 'page-workbench', title: 'Supervisor Mobile Workbench', subtitle: '60-second shift output entry, worker attendance, downtime', category: 'Page', icon: 'smartphone', route: '/workbench', badge: 'MOBILE PWA', badgeColor: 'mint' },
@@ -54,6 +58,7 @@ const SEARCH_REGISTRY: SearchItem[] = [
 
 export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
+  const { replaySplash } = useSplash();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -78,6 +83,10 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({ isOpen
 
   const handleSelect = (item: SearchItem) => {
     handleClose();
+    if (item.id === 'action-replay-splash') {
+      replaySplash();
+      return;
+    }
     navigate(item.route);
   };
 

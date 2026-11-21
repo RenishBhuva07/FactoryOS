@@ -16,3 +16,8 @@ export { useLayout } from "./useLayout";
 export { FactoryStoreProvider } from "./FactoryStoreContext";
 export { FactoryStoreContext } from "./factoryStoreContextDef";
 export { useFactoryStore } from "./useFactoryStore";
+
+export { SplashProvider } from "./SplashContext";
+export { SplashContext } from "./splashContextDef";
+export type { SplashContextType } from "./splashContextDef";
+export { useSplash } from "./useSplash";

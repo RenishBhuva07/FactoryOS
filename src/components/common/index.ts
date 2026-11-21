@@ -11,3 +11,4 @@ export * from './BrandLogo';
 export * from './CommandPaletteModal';
 export * from './NotificationsDrawer';
 export * from './WhatsAppDigestModal';
+export * from './SplashScreen';

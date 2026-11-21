@@ -3,7 +3,20 @@ import { AuthProvider } from "./context/AuthContext";
 import { OnboardingProvider } from "./context/OnboardingContext";
 import { FactoryStoreProvider } from "./context/FactoryStoreContext";
 import { LayoutProvider } from "./context/LayoutContext";
+import { SplashProvider, useSplash } from "./context";
+import { SplashScreen } from "./components/common/SplashScreen";
 import { router } from "./routes";
+
+function AppContent() {
+  const { isSplashActive, dismissSplash } = useSplash();
+
+  return (
+    <>
+      {isSplashActive && <SplashScreen onComplete={dismissSplash} />}
+      <RouterProvider router={router} />
+    </>
+  );
+}
 
 export function App() {
   return (
@@ -11,7 +24,9 @@ export function App() {
       <OnboardingProvider>
         <FactoryStoreProvider>
           <LayoutProvider>
-            <RouterProvider router={router} />
+            <SplashProvider>
+              <AppContent />
+            </SplashProvider>
           </LayoutProvider>
         </FactoryStoreProvider>
       </OnboardingProvider>
