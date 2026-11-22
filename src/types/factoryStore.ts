@@ -7,8 +7,7 @@ import type {
   AttentionAlertItem,
   ManagerActivityItem,
 } from "./dashboard";
-import type { OrderCommitment, OrderStatus } from "./orders";
-import type { OrderExecutionItem } from "./ordersManagement";
+import type { OrderCommitment, OrderStatus, OrderExecutionItem } from "./orders";
 import type { AssemblyLineStatus, ProductionLogEntry } from "./production";
 import type { WorkstationMachine, SecondaryMachine } from "./machines";
 import type { InventoryItem } from "./inventory";

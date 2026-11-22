@@ -21,7 +21,6 @@ import { MachinesPage } from '../pages/machines';
 import { QualityPage } from '../pages/quality';
 import { ReportsPage } from '../pages/reports';
 import { SettingsPage } from '../pages/settings';
-import { OrdersManagementPage } from '../pages/orders-management';
 import { TeamPage } from '../pages/team';
 import { WorkbenchPage } from '../pages/workbench';
 import { DesignReferenceDashboardPage } from '../design-reference';
@@ -58,7 +57,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/orders-management',
-        element: <OrdersManagementPage />,
+        element: <Navigate to="/orders?tab=job_cards" replace />,
       },
       {
         path: '/dispatch',
