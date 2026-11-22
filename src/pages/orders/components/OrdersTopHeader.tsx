@@ -8,15 +8,12 @@ export interface OrdersTopHeaderProps {
   brandName?: string;
   userName?: string;
   userEmail?: string;
+  ordersCount?: number;
+  jobsCount?: number;
+  templatesCount?: number;
+  stagingCount?: number;
   className?: string;
 }
-
-const ORDERS_NAV_TABS: NavItem[] = [
-  { id: 'active', label: 'Active Pipeline', badge: '4 POs' },
-  { id: 'job_cards', label: 'Job Cards & Matrix' },
-  { id: 'templates', label: 'PO Templates' },
-  { id: 'staging', label: 'Dispatch Staging' },
-];
 
 export const OrdersTopHeader: React.FC<OrdersTopHeaderProps> = ({
   activeTab,
@@ -24,17 +21,58 @@ export const OrdersTopHeader: React.FC<OrdersTopHeaderProps> = ({
   brandName = 'FactoryOS',
   userName,
   userEmail,
+  ordersCount = 3,
+  jobsCount = 3,
+  templatesCount = 2,
+  stagingCount = 1,
   className = '',
 }) => {
+  const tabs: NavItem[] = [
+    {
+      id: 'pipeline',
+      label: 'Active Pipeline',
+      badge: `${ordersCount} POs`,
+    },
+    {
+      id: 'job_cards',
+      label: 'Job Cards & Execution',
+      badge: `${jobsCount} Jobs`,
+    },
+    {
+      id: 'templates',
+      label: 'PO Templates',
+      badge: `${templatesCount} Active`,
+    },
+    {
+      id: 'staging',
+      label: 'Dispatch Staging',
+      badge: `${stagingCount} Ready`,
+    },
+  ];
+
+  const getRoleBadge = () => {
+    switch (activeTab) {
+      case 'job_cards':
+        return 'JOB CARDS';
+      case 'staging':
+        return 'LOGISTICS';
+      case 'templates':
+        return 'CATALOG';
+      case 'pipeline':
+      default:
+        return 'COMMERCIALS';
+    }
+  };
+
   return (
     <AppTopHeader
-      tabs={ORDERS_NAV_TABS}
-      activeTab={activeTab}
+      tabs={tabs}
+      activeTab={activeTab === 'active' ? 'pipeline' : activeTab}
       onTabChange={onTabChange}
       brandName={brandName}
       userName={userName}
       userEmail={userEmail}
-      roleBadge="COMMERCIALS"
+      roleBadge={getRoleBadge()}
       className={className}
     />
   );
