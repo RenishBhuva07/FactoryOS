@@ -20,8 +20,7 @@ interface NavItemDef {
 const NAV_ITEMS: NavItemDef[] = [
   { id: 'overview', label: 'Overview', icon: 'grid_view', path: '/dashboard' },
   { id: 'workbench', label: 'Supervisor Workbench', icon: 'smartphone', path: '/workbench', badge: '60s Mobile', badgeColor: 'mint' },
-  { id: 'orders', label: 'Orders & POs', icon: 'shopping_bag', path: '/orders' },
-  { id: 'orders-management', label: 'Orders Management', icon: 'assignment', path: '/orders-management' },
+  { id: 'orders', label: 'Orders & Job Cards', icon: 'shopping_bag', path: '/orders' },
   { id: 'production', label: 'Production Floor', icon: 'factory', path: '/production' },
   { id: 'production-logs', label: 'Production Logs', icon: 'receipt_long', path: '/production-logs' },
   { id: 'machines', label: 'Machines Fleet', icon: 'precision_manufacturing', path: '/machines' },

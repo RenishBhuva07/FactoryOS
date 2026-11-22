@@ -23,7 +23,6 @@ export interface FloatingIconDockProps {
 const DEFAULT_MAIN_ITEMS: DockItem[] = [
   { id: "overview", icon: "grid_view", label: "Overview" },
   { id: "orders", icon: "shopping_bag", label: "Orders" },
-  { id: "orders-management", icon: "assignment", label: "Orders Management" },
   { id: "production", icon: "factory", label: "Production" },
   { id: "production-logs", icon: "receipt_long", label: "Production Logs" },
   { id: "machines", icon: "precision_manufacturing", label: "Machines" },

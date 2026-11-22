@@ -85,7 +85,7 @@ const SEARCH_REGISTRY: SearchItem[] = [
     subtitle: "Shopfloor execution matrix, BOM readiness",
     category: "Page",
     icon: "assignment",
-    route: "/orders-management",
+    route: "/orders?tab=job_cards",
   },
   {
     id: "page-production",
@@ -195,7 +195,7 @@ const SEARCH_REGISTRY: SearchItem[] = [
     subtitle: "800 pcs • Precision Flanges • Line 04",
     category: "Order",
     icon: "assignment",
-    route: "/orders-management",
+    route: "/orders?tab=job_cards",
     badge: "BOM DELAY",
     badgeColor: "coral",
   },

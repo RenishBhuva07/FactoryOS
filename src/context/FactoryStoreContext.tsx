@@ -12,14 +12,15 @@ import type {
   OfflineProductionSlip,
   MachineIssueTicket,
 } from "../types/factoryStore";
-import type { OrderCommitment, OrderStatus } from "../types/orders";
-import type { OrderExecutionItem } from "../types/ordersManagement";
+import type { OrderCommitment, OrderStatus, OrderExecutionItem } from "../types/orders";
 import type { ProductionLogEntry } from "../types/production";
 import type { QualityInspectionBatch } from "../types/quality";
 import type { OutboundShipment } from "../types/dispatch";
 
-import { MOCK_ACTIVE_ORDER_COMMITMENTS } from "../data/mockOrdersData";
-import { MOCK_ORDER_EXECUTION_ITEMS } from "../data/mockOrdersManagementData";
+import {
+  MOCK_ACTIVE_ORDER_COMMITMENTS,
+  MOCK_ORDER_EXECUTION_ITEMS,
+} from "../data/mockOrdersData";
 import {
   MOCK_PRIMARY_WORKSTATIONS,
   MOCK_SECONDARY_MACHINES,

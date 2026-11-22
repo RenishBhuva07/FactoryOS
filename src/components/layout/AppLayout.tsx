@@ -14,7 +14,6 @@ import { MobileBottomNav } from './MobileBottomNav';
 const FACTORY_SIDEBAR_ITEMS: DockItem[] = [
   { id: 'overview', icon: 'grid_view', label: 'Overview' },
   { id: 'orders', icon: 'shopping_bag', label: 'Orders' },
-  { id: 'orders-management', icon: 'assignment', label: 'Orders Management' },
   { id: 'production', icon: 'factory', label: 'Production' },
   { id: 'production-logs', icon: 'receipt_long', label: 'Production Logs' },
   { id: 'machines', icon: 'precision_manufacturing', label: 'Machines' },
@@ -39,8 +38,8 @@ export const AppLayout: React.FC = () => {
 
   const getActiveDockId = (): string => {
     const path = location.pathname;
-    if (path.startsWith('/orders-management')) return 'orders-management';
     if (path.startsWith('/orders')) return 'orders';
+    if (path.startsWith('/orders-management')) return 'orders';
     if (path.startsWith('/production-logs')) return 'production-logs';
     if (path.startsWith('/production')) return 'production';
     if (path.startsWith('/machines')) return 'machines';
@@ -57,10 +56,8 @@ export const AppLayout: React.FC = () => {
   const handleDockSelect = (id: string) => {
     switch (id) {
       case 'orders':
-        navigate('/orders');
-        break;
       case 'orders-management':
-        navigate('/orders-management');
+        navigate('/orders');
         break;
       case 'production':
         navigate('/production');
