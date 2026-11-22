@@ -5,6 +5,8 @@ import type { OrderCommitment } from '../../../types/orders';
 
 export interface ActiveOrdersListProps {
   orders: OrderCommitment[];
+  activeFilter?: string;
+  onFilterChange?: (filterId: string) => void;
   onFastTrackQc?: (order: OrderCommitment) => void;
   onViewAllocation?: (order: OrderCommitment) => void;
   onMoreActions?: (order: OrderCommitment) => void;
@@ -18,15 +20,25 @@ const FILTER_ITEMS = [
 
 export const ActiveOrdersList: React.FC<ActiveOrdersListProps> = ({
   orders,
+  activeFilter: controlledFilter,
+  onFilterChange,
   onFastTrackQc,
   onViewAllocation,
   onMoreActions,
   className = '',
 }) => {
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [internalFilter, setInternalFilter] = useState('all');
+  const currentFilter = controlledFilter !== undefined ? controlledFilter : internalFilter;
+
+  const handleFilterChange = (id: string) => {
+    if (controlledFilter === undefined) {
+      setInternalFilter(id);
+    }
+    onFilterChange?.(id);
+  };
 
   const filteredOrders = orders.filter((order) => {
-    if (activeFilter === 'needs_qc') {
+    if (currentFilter === 'needs_qc') {
       return order.needsQc || order.status === 'awaiting_qc';
     }
     return true;
@@ -34,7 +46,6 @@ export const ActiveOrdersList: React.FC<ActiveOrdersListProps> = ({
 
   return (
     <section className={`space-y-3.5 ${className}`}>
-      {/* Section Header with Segmented Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#002941]">
@@ -48,14 +59,13 @@ export const ActiveOrdersList: React.FC<ActiveOrdersListProps> = ({
         <div className="shrink-0">
           <SegmentedPillNav
             items={FILTER_ITEMS}
-            activeId={activeFilter}
-            onChange={setActiveFilter}
+            activeId={currentFilter}
+            onChange={handleFilterChange}
             variant="gray"
           />
         </div>
       </div>
 
-      {/* List of Order Cards */}
       <div className="space-y-3.5">
         {filteredOrders.length > 0 ? (
           filteredOrders.map((order) => (

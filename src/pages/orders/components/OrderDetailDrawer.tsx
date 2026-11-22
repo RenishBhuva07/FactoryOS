@@ -8,6 +8,7 @@ export interface OrderDetailDrawerProps {
   onClose: () => void;
   onFastTrackQc?: (order: OrderCommitment) => void;
   onDispatchStaging?: (order: OrderCommitment) => void;
+  onIssueJobCard?: (order: OrderCommitment) => void;
 }
 
 export const OrderDetailDrawer: React.FC<OrderDetailDrawerProps> = ({
@@ -16,6 +17,7 @@ export const OrderDetailDrawer: React.FC<OrderDetailDrawerProps> = ({
   onClose,
   onFastTrackQc,
   onDispatchStaging,
+  onIssueJobCard,
 }) => {
   if (!isOpen || !order) return null;
 
@@ -172,6 +174,22 @@ export const OrderDetailDrawer: React.FC<OrderDetailDrawerProps> = ({
 
         {/* Footer Actions */}
         <div className="p-4 border-t border-[#DFECF3] bg-[#F8FAFA] space-y-2 sticky bottom-0">
+          {order.status !== 'ready_for_dispatch' && order.status !== 'completed' && onIssueJobCard && (
+            <PillButton
+              type="button"
+              variant="secondary"
+              size="md"
+              className="w-full text-xs font-semibold bg-white border border-[#DFECF3]"
+              icon={<span className="material-symbols-outlined text-[17px]">assignment_add</span>}
+              onClick={() => {
+                onClose();
+                onIssueJobCard(order);
+              }}
+            >
+              Issue Production Job Card
+            </PillButton>
+          )}
+
           {order.needsQc ? (
             <PillButton
               type="button"
@@ -205,7 +223,7 @@ export const OrderDetailDrawer: React.FC<OrderDetailDrawerProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-2 text-xs font-semibold text-[#566E7F] hover:text-[#002941] text-center"
+            className="w-full py-2 text-xs font-semibold text-[#566E7F] hover:text-[#002941] text-center cursor-pointer"
           >
             Close Details
           </button>
