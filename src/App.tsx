@@ -13,7 +13,13 @@ function AppContent() {
   return (
     <>
       {isSplashActive && <SplashScreen onComplete={dismissSplash} />}
-      <RouterProvider router={router} />
+      <div
+        className="w-full h-full"
+        aria-hidden={isSplashActive}
+        inert={isSplashActive ? true : undefined}
+      >
+        <RouterProvider router={router} />
+      </div>
     </>
   );
 }
